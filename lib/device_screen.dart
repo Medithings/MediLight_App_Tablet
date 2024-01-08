@@ -14,7 +14,7 @@ class DeviceScreen extends StatefulWidget {
 
 class _DeviceScreenState extends State<DeviceScreen> {
   // flutterBlue
-  FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
+  FlutterBluePlus flutterBlue = FlutterBluePlus();
 
   // 연결 상태 표시 문자열
   String stateText = 'Connecting';
@@ -34,15 +34,15 @@ class _DeviceScreenState extends State<DeviceScreen> {
   initState() {
     super.initState();
     // 상태 연결 리스너 등록
-    _stateListener = widget.device.state.listen((event) {
-      debugPrint('event :  $event');
-      if (deviceState == event) {
-        // 상태가 동일하다면 무시
-        return;
-      }
-      // 연결 상태 정보 변경
-      setBleConnectionState(event);
-    });
+    // _stateListener = widget.device.state.listen((event) {
+    //   debugPrint('event :  $event');
+    //   if (deviceState == event) {
+    //     // 상태가 동일하다면 무시
+    //     return;
+    //   }
+    //   // 연결 상태 정보 변경
+    //   setBleConnectionState(event);
+    // });
     // 연결 시작
     connect();
   }

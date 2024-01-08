@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -27,7 +28,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
+  FlutterBluePlus flutterBlue = FlutterBluePlus();
   List<ScanResult> scanResultList = [];
   bool _isScanning = false;
 
@@ -100,19 +101,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /* BLE 아이콘 위젯 */
   Widget leading(ScanResult r) {
-    return CircleAvatar(
+    return const CircleAvatar(
+      backgroundColor: Colors.cyan,
       child: Icon(
         Icons.bluetooth,
         color: Colors.white,
       ),
-      backgroundColor: Colors.cyan,
     );
   }
 
   /* 장치 아이템을 탭 했을때 호출 되는 함수 */
   void onTap(ScanResult r) {
     // 단순히 이름만 출력
-    print('${r.device.name}');
+    if (kDebugMode) {
+      print(r.device.name);
+    }
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => DeviceScreen(device: r.device)),
