@@ -52,8 +52,8 @@ class _SystemDeviceTileState extends State<SystemDeviceTile> {
       title: Text(widget.device.platformName),
       subtitle: Text(widget.device.remoteId.toString()),
       trailing: ElevatedButton(
-        child: isConnected ? const Text('OPEN') : const Text('CONNECT'),
         onPressed: isConnected ? widget.onOpen : widget.onConnect,
+        child: isConnected ? const Text('OPEN') : const Text('CONNECT'),
       ),
     );
   }

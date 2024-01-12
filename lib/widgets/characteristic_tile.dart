@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -8,6 +7,8 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import "../utils/snackbar.dart";
 
 import "descriptor_tile.dart";
+
+// Base64 (Encode, Decode) https://njw9108.tistory.com/38
 
 class CharacteristicTile extends StatefulWidget {
   final BluetoothCharacteristic characteristic;
@@ -29,6 +30,7 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
     super.initState();
     _lastValueSubscription = widget.characteristic.lastValueStream.listen((value) {
       _value = value;
+      Snackbar.show(ABC.c, utf8.decode(value), success: true);
       if (mounted) {
         setState(() {});
       }
@@ -61,7 +63,7 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
 
   Future onWritePressed() async {
     try {
-      await c.write(_getRandomBytes(), withoutResponse: c.properties.writeWithoutResponse);
+      await c.write(utf8.encode("status0\r"), withoutResponse: c.properties.writeWithoutResponse);
       Snackbar.show(ABC.c, "Write: Success", success: true);
       if (c.properties.read) {
         await c.read();
@@ -77,6 +79,7 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
       await c.setNotifyValue(c.isNotifying == false);
       Snackbar.show(ABC.c, "$op : Success", success: true);
       if (c.properties.read) {
+        print("It is read\n");
         await c.read();
       }
       if (mounted) {
@@ -89,17 +92,17 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
 
   Widget buildUuid(BuildContext context) {
     String uuid = '0x${widget.characteristic.uuid.str.toUpperCase()}';
-    return Text(uuid, style: TextStyle(fontSize: 13));
+    return Text(uuid, style: const TextStyle(fontSize: 13));
   }
 
   Widget buildValue(BuildContext context) {
     String data = _value.toString();
-    return Text(data, style: TextStyle(fontSize: 13, color: Colors.grey));
+    return Text(data, style: const TextStyle(fontSize: 13, color: Colors.grey));
   }
 
   Widget buildReadButton(BuildContext context) {
     return TextButton(
-        child: Text("Read"),
+        child: const Text("Read"),
         onPressed: () async {
           await onReadPressed();
           if (mounted) {

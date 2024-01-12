@@ -69,10 +69,12 @@ class _ScanResultTileState extends State<ScanResultTile> {
             widget.result.device.platformName,
             overflow: TextOverflow.ellipsis,
           ),
-          Text(
-            widget.result.device.remoteId.toString(),
-            style: Theme.of(context).textTheme.bodySmall,
-          )
+          // before:
+          // Text(
+          //   widget.result.device.remoteId.toString(),
+          //   style: Theme.of(context).textTheme.bodySmall,
+          // )
+          // after: eliminate unnecessary info
         ],
       );
     } else {
@@ -80,16 +82,18 @@ class _ScanResultTileState extends State<ScanResultTile> {
     }
   }
 
-  Widget _buildConnectButton(BuildContext context) {
-    return ElevatedButton(
-      child: isConnected ? const Text('OPEN') : const Text('CONNECT'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-      ),
-      onPressed: (widget.result.advertisementData.connectable) ? widget.onTap : null,
-    );
-  }
+  // before: connect button exist
+  // Widget _buildConnectButton(BuildContext context) {
+  //   return ElevatedButton(
+  //     style: ElevatedButton.styleFrom(
+  //       backgroundColor: Colors.black,
+  //       foregroundColor: Colors.white,
+  //     ),
+  //     onPressed: (widget.result.advertisementData.connectable) ? widget.onTap : null,
+  //     child: isConnected ? const Text('OPEN') : const Text('CONNECT'),
+  //   );
+  // }
+  // after: eliminate
 
   Widget _buildAdvRow(BuildContext context, String title, String value) {
     return Padding(
@@ -116,18 +120,29 @@ class _ScanResultTileState extends State<ScanResultTile> {
   @override
   Widget build(BuildContext context) {
     var adv = widget.result.advertisementData;
-    return ExpansionTile(
-      title: _buildTitle(context),
-      leading: Text(widget.result.rssi.toString()),
-      trailing: _buildConnectButton(context),
-      children: <Widget>[
-        if (adv.advName.isNotEmpty) _buildAdvRow(context, 'Name', adv.advName),
-        if (adv.txPowerLevel != null) _buildAdvRow(context, 'Tx Power Level', '${adv.txPowerLevel}'),
-        if (adv.manufacturerData.isNotEmpty)
-          _buildAdvRow(context, 'Manufacturer Data', getNiceManufacturerData(adv.manufacturerData)),
-        if (adv.serviceUuids.isNotEmpty) _buildAdvRow(context, 'Service UUIDs', getNiceServiceUuids(adv.serviceUuids)),
-        if (adv.serviceData.isNotEmpty) _buildAdvRow(context, 'Service Data', getNiceServiceData(adv.serviceData)),
-      ],
+    // before: no InkWell
+    // after: wrap with InkWell
+    return InkWell(
+      onTap: (widget.result.advertisementData.connectable) ? widget.onTap : null,
+      child: ListTile(
+        title: _buildTitle(context),
+        leading: Text(widget.result.rssi.toString()),
+        // before: trailing: _buildConnectButton(context),
+        // after: no _buildConnectButton
+
+        // before:
+        // children: <Widget>[
+        //   if (adv.advName.isNotEmpty) _buildAdvRow(context, 'Name', adv.advName),
+        //   // before :
+        //   // if (adv.txPowerLevel != null) _buildAdvRow(context, 'Tx Power Level', '${adv.txPowerLevel}'),
+        //   // if (adv.manufacturerData.isNotEmpty)
+        //   //   _buildAdvRow(context, 'Manufacturer Data', getNiceManufacturerData(adv.manufacturerData)),
+        //   // if (adv.serviceUuids.isNotEmpty) _buildAdvRow(context, 'Service UUIDs', getNiceServiceUuids(adv.serviceUuids)),
+        //   // if (adv.serviceData.isNotEmpty) _buildAdvRow(context, 'Service Data', getNiceServiceData(adv.serviceData)),
+        //   // after : eliminate all the unnecessary info
+        // ],
+        // after: eliminate
+      ),
     );
   }
 }

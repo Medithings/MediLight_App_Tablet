@@ -21,7 +21,7 @@ class BluetoothOffScreen extends StatelessWidget {
   Widget buildTitle(BuildContext context) {
     String? state = adapterState?.toString().split(".").last;
     return Text(
-      'Bluetooth Adapter is ${state != null ? state : 'not available'}',
+      'Bluetooth Adapter is ${state ?? 'not available'}',
       style: Theme.of(context).primaryTextTheme.titleSmall?.copyWith(color: Colors.white),
     );
   }

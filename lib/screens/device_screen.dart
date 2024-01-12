@@ -1,9 +1,11 @@
 import 'dart:async';
 
-import 'package:ble_uart/screens/uart_communication.dart';
+import 'package:ble_uart/screens/uart_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+import '../main.dart';
 import '../widgets/service_tile.dart';
 import '../widgets/characteristic_tile.dart';
 import '../widgets/descriptor_tile.dart';
@@ -20,6 +22,8 @@ class DeviceScreen extends StatefulWidget {
 }
 
 class _DeviceScreenState extends State<DeviceScreen> {
+  final String suid = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"; // nordic uart service uuid
+
   int? _rssi;
   int? _mtuSize;
   BluetoothConnectionState _connectionState = BluetoothConnectionState.disconnected;
@@ -27,6 +31,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   bool _isDiscoveringServices = false;
   bool _isConnecting = false;
   bool _isDisconnecting = false;
+  String recmesg = "";
 
   late StreamSubscription<BluetoothConnectionState> _connectionStateSubscription;
   late StreamSubscription<bool> _isConnectingSubscription;
@@ -41,6 +46,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
       _connectionState = state;
       if (state == BluetoothConnectionState.connected) {
         _services = []; // must rediscover services
+        onDiscoverServicesPressed();
       }
       if (state == BluetoothConnectionState.connected && _rssi == null) {
         _rssi = await widget.device.readRssi();
@@ -50,12 +56,21 @@ class _DeviceScreenState extends State<DeviceScreen> {
       }
     });
 
+    if (kDebugMode) {
+      print("connection State done");
+    }
+
+    // mtu 조정 필요 없으니 사실 필요 없음
     _mtuSubscription = widget.device.mtu.listen((value) {
       _mtuSize = value;
       if (mounted) {
         setState(() {});
       }
     });
+
+    if (kDebugMode) {
+      print("MTU Sub done");
+    }
 
     _isConnectingSubscription = widget.device.isConnecting.listen((value) {
       _isConnecting = value;
@@ -64,12 +79,24 @@ class _DeviceScreenState extends State<DeviceScreen> {
       }
     });
 
+    if (kDebugMode) {
+      print("is connecting sub done");
+    }
+
     _isDisconnectingSubscription = widget.device.isDisconnecting.listen((value) {
       _isDisconnecting = value;
       if (mounted) {
         setState(() {});
       }
     });
+
+    if (kDebugMode) {
+      print("is disconnect sub done");
+    }
+
+    if (kDebugMode) {
+      print("on Discover services Pressed");
+    }
   }
 
   @override
@@ -94,6 +121,9 @@ class _DeviceScreenState extends State<DeviceScreen> {
         // ignore connections canceled by the user
       } else {
         Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
+        if (kDebugMode) {
+          print(e);
+        }
       }
     }
   }
@@ -123,7 +153,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
       });
     }
     try {
-      _services = await widget.device.discoverServices();
+      for(var element in await widget.device.discoverServices()){
+        if(element.uuid.toString().toUpperCase() == suid) _services.add(element);
+      }
+      // before : get all the services
+      // _services = await widget.device.discoverServices();
       Snackbar.show(ABC.c, "Discover Services: Success", success: true);
     } catch (e) {
       Snackbar.show(ABC.c, prettyException("Discover Services Error:", e), success: false);
@@ -259,15 +293,22 @@ class _DeviceScreenState extends State<DeviceScreen> {
               Container(
                 height: 100,
               ),
+              isConnected?
               OutlinedButton(
-                  onPressed: ()=> Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UARTCommunication(device: widget.device,),
-                      settings: const RouteSettings(name: '/DeviceScreen'),
-                  ),
-                ),
+                onPressed: (){
+                  Navigator.pushNamed(
+                    context,
+                    UARTScreen.routeName,
+                    arguments: ScreenArguments(
+                      _services.first,
+                      widget.device.platformName.toString(),
+                    ),
+                  );
+                },
                 child: const Text('UART Communication'),
-              ),
+              ) :
+              const SizedBox(),
+              Text(recmesg),
             ],
           ),
         ),
