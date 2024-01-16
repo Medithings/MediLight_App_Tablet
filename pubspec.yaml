@@ -39,6 +39,8 @@ dependencies:
   intl: ^0.19.0
   logger: ^2.0.2+1
   alarm: ^3.0.4
+  flutter_onboarding_slider: ^1.0.11
+  lottie: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -63,9 +65,16 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/ringtone/marimba.mp3
+    - assets/ringtone/mozart.mp3
+    - assets/ringtone/nokia.mp3
+    - assets/ringtone/one_piece.mp3
+    - assets/ringtone/star_wars.mp3
+    - assets/lottie/first.json
+    - assets/lottie/second.json
+    - assets/lottie/third.json
+    - assets/lottie/fourth.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

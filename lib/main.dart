@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:ble_uart/screens/onboarding_screen.dart';
 import 'package:ble_uart/screens/uart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -57,7 +58,7 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
 
     return MaterialApp(
       color: Colors.lightBlue,
-      home: screen, // widget that indicated page whether the bluetooth is on / off
+      home: const OnBoardingScreen(), // widget that indicated page whether the bluetooth is on / off
       navigatorObservers: [BluetoothAdapterStateObserver()], // Navigate Observers
       debugShowCheckedModeBanner: false,
       onGenerateRoute: (settings){
