@@ -32,17 +32,18 @@ class OnBoardingScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        trailing: Text(
-          'Login',
-          style: TextStyle(
-            fontSize: 17,
-            color: kDarkBlueColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        trailingFunction: (){
-          Navigator.push(context, CupertinoPageRoute(builder: (context) => const ScanScreen(),),);
-        },
+        // Login 기능은 필요 없어서
+        // trailing: Text(
+        //   'Login',
+        //   style: TextStyle(
+        //     fontSize: 17,
+        //     color: kDarkBlueColor,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
+        // trailingFunction: (){
+        //   Navigator.push(context, CupertinoPageRoute(builder: (context) => const ScanScreen(),),);
+        // },
         controllerColor: kDarkBlueColor,
         totalPage: 4,
 
@@ -57,13 +58,18 @@ class OnBoardingScreen extends StatelessWidget {
               ),
             ],
           ),
-          Row(
+          Column(
             children: [
-              const SizedBox(width: 5,),
-              SizedBox(
-                width: MediaQuery.of(context).size.width*0.97,
-                height: MediaQuery.of(context).size.height*0.48,
-                child: Lottie.asset('assets/lottie/second.json', width: 300, height: 230, fit: BoxFit.fill,),
+              const SizedBox(height: 50,),
+              Row(
+                children: [
+                  const SizedBox(width: 15,),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.90,
+                    height: MediaQuery.of(context).size.height*0.45,
+                    child: Lottie.asset('assets/lottie/second.json', width: 300, height: 230, fit: BoxFit.fill,),
+                  ),
+                ],
               ),
             ],
           ),
