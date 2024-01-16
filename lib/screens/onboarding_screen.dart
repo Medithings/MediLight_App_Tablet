@@ -1,3 +1,4 @@
+import 'package:ble_uart/screens/register_screen.dart';
 import 'package:ble_uart/screens/scan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class OnBoardingScreen extends StatelessWidget {
           Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => const ScanScreen()),
+                builder: (context) => RegisterScreen()),
           );
         },
         skipTextButton: Text(
