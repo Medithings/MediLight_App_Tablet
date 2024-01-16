@@ -11,6 +11,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import 'screens/bluetooth_off_screen.dart';
 import 'screens/scan_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true); // Log level 을 verbose 로 설정, syntax color on
@@ -30,6 +31,7 @@ class FlutterBlueApp extends StatefulWidget {
 
 class _FlutterBlueAppState extends State<FlutterBlueApp> {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown; // state unknown for IOS
+  bool registered = false;
 
   late StreamSubscription<BluetoothAdapterState> _adapterStateStateSubscription; // stream state subscription
 
@@ -42,6 +44,7 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
         setState(() {});
       }
     });
+    getSharedPreferencedData();
   }
 
   @override
@@ -50,15 +53,29 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
     super.dispose();
   }
 
+  // TODO: return Wigdet 함수 where the device has stored data (name, age, height, weight, and gender)
+  void getSharedPreferencedData() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+
+    try{
+      registered = pref.getBool("registered")!;
+    }catch(e){
+      registered = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget screen = _adapterState == BluetoothAdapterState.on
         ? const ScanScreen() // if the device's bluetooth is on then widget to ScanScreen()
         : BluetoothOffScreen(adapterState: _adapterState); // else widget to BluetoothOffScreen() with current state
 
+
+
     return MaterialApp(
       color: Colors.lightBlue,
-      home: const OnBoardingScreen(), // widget that indicated page whether the bluetooth is on / off
+      home: registered?
+            screen : const OnBoardingScreen(), // widget that indicated page whether the bluetooth is on / off
       navigatorObservers: [BluetoothAdapterStateObserver()], // Navigate Observers
       debugShowCheckedModeBanner: false,
       onGenerateRoute: (settings){
