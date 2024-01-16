@@ -8,3 +8,9 @@ MediLight mobile application
 
 - Alarm / Notification
   - Alarm / Notification settings done
+
+- Splash Page
+  - splash page added
+
+- Onboarding Page
+  - onboarding page added
