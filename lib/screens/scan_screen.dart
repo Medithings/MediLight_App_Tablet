@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ble_uart/screens/settings_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+import '../main.dart';
 import 'device_screen.dart';
 import '../utils/snackbar.dart';
 import '../widgets/system_device_tile.dart';
@@ -11,7 +14,7 @@ import '../widgets/scan_result_tile.dart';
 import '../utils/extra.dart';
 
 class ScanScreen extends StatefulWidget {
-  const ScanScreen({Key? key}) : super(key: key);
+  ScanScreen({Key? key,}) : super(key: key);
 
   @override
   State<ScanScreen> createState() => _ScanScreenState();
@@ -117,11 +120,14 @@ class _ScanScreenState extends State<ScanScreen> {
     device.connectAndUpdateStream().catchError((e) {
       Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
     });
-    MaterialPageRoute route = MaterialPageRoute(
-        builder: (context) => DeviceScreen(device: device),
-        settings: const RouteSettings(name: '/DeviceScreen'),
-    );
-    Navigator.of(context).push(route);
+    // TODO : NAVIGATOR PUSH HOME
+    // MaterialPageRoute route = MaterialPageRoute(
+    //     builder: (context) => DeviceScreen(device: device),
+    //     settings: const RouteSettings(name: '/DeviceScreen'),
+    // );
+    // Navigator.of(context).push(route);
+    final navigator = Navigator.of(context);
+    navigator.pushReplacement(MaterialPageRoute(builder: (context) => const FlutterBlueApp(),),);
   }
 
   Future onRefresh() {
@@ -184,12 +190,19 @@ class _ScanScreenState extends State<ScanScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Find Devices'),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.of(context).push(CupertinoPageRoute(builder: (context) => const SettingsScreen(),),),
+              icon: const Icon(Icons.settings),
+            ),
+          ],
         ),
         body: RefreshIndicator(
           onRefresh: onRefresh,
           child: ListView(
             children: <Widget>[
-              ..._buildSystemDeviceTiles(context),
+              // no need system devices
+              // ..._buildSystemDeviceTiles(context),
               ..._buildScanResultTiles(context),
             ],
           ),
