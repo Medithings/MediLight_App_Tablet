@@ -4,8 +4,10 @@
 
 import 'dart:async';
 
+import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/screens/onboarding_screen.dart';
 import 'package:ble_uart/screens/uart_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -32,11 +34,14 @@ class FlutterBlueApp extends StatefulWidget {
 class _FlutterBlueAppState extends State<FlutterBlueApp> {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown; // state unknown for IOS
   bool registered = false;
+  String name = "";
 
   late StreamSubscription<BluetoothAdapterState> _adapterStateStateSubscription; // stream state subscription
+  late SharedPreferences pref;
 
   @override
   void initState() { // Identify whether the adapter is connected (listening)
+    prefGetter();
     super.initState();
     _adapterStateStateSubscription = FlutterBluePlus.adapterState.listen((state) {
       _adapterState = state; // listen to current state
@@ -44,7 +49,6 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
         setState(() {});
       }
     });
-    getSharedPreferencedData();
   }
 
   @override
@@ -54,28 +58,42 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
   }
 
   // TODO: return Wigdet 함수 where the device has stored data (name, age, height, weight, and gender)
-  void getSharedPreferencedData() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
+  void prefGetter() async {
+     pref = await SharedPreferences.getInstance();
 
     try{
       registered = pref.getBool("registered")!;
+      name = pref.getString("name")!;
     }catch(e){
       registered = false;
+      if (kDebugMode) {
+        print("error : $e");
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     Widget screen = _adapterState == BluetoothAdapterState.on
-        ? const ScanScreen() // if the device's bluetooth is on then widget to ScanScreen()
+        ? ScanScreen() // if the device's bluetooth is on then widget to ScanScreen()
         : BluetoothOffScreen(adapterState: _adapterState); // else widget to BluetoothOffScreen() with current state
 
+    // prefGetter();
+    Widget firstScreen(){
+      if(registered){ // TODO: ScanScreen should be replaced with home page
+        return _adapterState == BluetoothAdapterState.on? const HomeScreen() : BluetoothOffScreen(adapterState: _adapterState);
+      } else{
+        return const OnBoardingScreen();
+      }
+    }
 
+    if (kDebugMode) {
+      print("[print k debug] $name");
+    }
 
     return MaterialApp(
       color: Colors.lightBlue,
-      home: registered?
-            screen : const OnBoardingScreen(), // widget that indicated page whether the bluetooth is on / off
+      home: firstScreen(),
       navigatorObservers: [BluetoothAdapterStateObserver()], // Navigate Observers
       debugShowCheckedModeBanner: false,
       onGenerateRoute: (settings){

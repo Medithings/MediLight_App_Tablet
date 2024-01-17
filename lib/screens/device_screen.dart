@@ -46,6 +46,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
       _connectionState = state;
       if (state == BluetoothConnectionState.connected) {
         _services = []; // must rediscover services
+        widget.device.connect(mtu:null, autoConnect: true);
         onDiscoverServicesPressed();
       }
       if (state == BluetoothConnectionState.connected && _rssi == null) {
@@ -85,6 +86,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
     _isDisconnectingSubscription = widget.device.isDisconnecting.listen((value) {
       _isDisconnecting = value;
+      widget.device.disconnect();
       if (mounted) {
         setState(() {});
       }

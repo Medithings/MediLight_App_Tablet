@@ -23,6 +23,8 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
   String weight = "";
   String gender = "";
 
+  late SharedPreferences pref;
+
   void _submit(){
     final validationSuccess = _fk.currentState?.validate();
 
@@ -72,7 +74,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
                      1. await 해서 로컬 데이터 저장
                      2. Navigate
                 */
-                final SharedPreferences pref = await SharedPreferences.getInstance();
+                pref = await SharedPreferences.getInstance();
                 pref.setBool('registered', true);
                 pref.setString('name', name);
                 pref.setString('age', age);
@@ -80,7 +82,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
                 pref.setString('weight', weight);
                 pref.setString('gender', gender);
 
-                navigator.pushReplacement(CupertinoPageRoute(builder: (context) => const FlutterBlueApp(),),);
+                navigator.pushReplacement(MaterialPageRoute(builder: (context) => ScanScreen(),),);
               },
               child: const Text("확인"),
             ),
