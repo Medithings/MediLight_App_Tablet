@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/screens/onboarding_screen.dart';
 import 'package:ble_uart/screens/uart_screen.dart';
@@ -81,7 +82,7 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
     // prefGetter();
     Widget firstScreen(){
       if(registered){ // TODO: ScanScreen should be replaced with home page
-        return _adapterState == BluetoothAdapterState.on? const HomeScreen() : BluetoothOffScreen(adapterState: _adapterState);
+        return _adapterState == BluetoothAdapterState.on? const BetweenScreen() : BluetoothOffScreen(adapterState: _adapterState);
       } else{
         return const OnBoardingScreen();
       }
