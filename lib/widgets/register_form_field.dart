@@ -1,3 +1,4 @@
+import 'package:ble_uart/screens/first_connect_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -75,14 +76,13 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
                      2. Navigate
                 */
                 pref = await SharedPreferences.getInstance();
-                pref.setBool('registered', true);
                 pref.setString('name', name);
                 pref.setString('age', age);
                 pref.setString('height', height);
                 pref.setString('weight', weight);
                 pref.setString('gender', gender);
 
-                navigator.pushReplacement(MaterialPageRoute(builder: (context) => ScanScreen(),),);
+                navigator.pushReplacement(MaterialPageRoute(builder: (context) => const FirstConnectScreen(),),);
               },
               child: const Text("확인"),
             ),

@@ -120,12 +120,7 @@ class _ScanScreenState extends State<ScanScreen> {
     device.connectAndUpdateStream().catchError((e) {
       Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
     });
-    // TODO : NAVIGATOR PUSH HOME
-    // MaterialPageRoute route = MaterialPageRoute(
-    //     builder: (context) => DeviceScreen(device: device),
-    //     settings: const RouteSettings(name: '/DeviceScreen'),
-    // );
-    // Navigator.of(context).push(route);
+    // TODO: device_screen에서 함수 불러오고 shared preferences의 registered를 true
     final navigator = Navigator.of(context);
     navigator.pushReplacement(MaterialPageRoute(builder: (context) => const FlutterBlueApp(),),);
   }
