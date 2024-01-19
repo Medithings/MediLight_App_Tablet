@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ble_uart/screens/bottom_navigation_screen.dart';
 import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/utils/extra.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../utils/ble_info.dart';
 
 class BetweenScreen extends StatefulWidget {
   const BetweenScreen({super.key});
@@ -17,16 +21,14 @@ class BetweenScreen extends StatefulWidget {
 
 class _BetweenScreenState extends State<BetweenScreen> {
 
-  List<BluetoothDevice> _systemDevices = []; // FBP에서 제공하는 것 (BluetoothDevice)
-  List<ScanResult> _scanResults = []; // FBP에서 제공하는 것 (ScanResult)
+  final List<ScanResult> _scanResults = []; // FBP에서 제공하는 것 (ScanResult)
   List<BluetoothDevice> patch = []; // FBP에서 제공하는 것 (BluetoothDevice)
-  List<BluetoothService> _services = [];
+  final List<BluetoothService> _services = [];
   late BluetoothService _service;
   late StreamSubscription<BluetoothConnectionState> _connectionStateSubscription;
   late List<BluetoothCharacteristic> characteristics;
-  late Route route;
+  late Route route = MaterialPageRoute(builder: (context) => const BottomNavigationScreen());
 
-  BluetoothConnectionState _connectionState = BluetoothConnectionState.disconnected;
   late StreamSubscription<List<ScanResult>> _scanResultsSubscription; // Stream으로 받아오는 scan result list
 
   static const String suid = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"; // Nordic service uid
@@ -53,9 +55,11 @@ class _BetweenScreenState extends State<BetweenScreen> {
             print("[BetweenScreen] remoteID: ${element.device.remoteId.str}\ndevice name:${element.device.platformName}");
           }
           if(_scanResults.indexWhere((x) => x.device.remoteId == element.device.remoteId) < 0){
+            onStop();
             _scanResults.add(element);
             patch.add(element.device);
-            onStop();
+            storingDevice(element.device);
+            onConnect(patch.first);
           }
         }
       }
@@ -71,7 +75,6 @@ class _BetweenScreenState extends State<BetweenScreen> {
         print("[FirstConnectScreen] something went wrong while scanning on the initial state\nError: $e");
       }
     });
-
     super.initState();
   }
 
@@ -86,7 +89,6 @@ class _BetweenScreenState extends State<BetweenScreen> {
     await getRemoteId();
 
     try {
-      _systemDevices = await FlutterBluePlus.systemDevices;
     } catch (e) {
       if(kDebugMode){
         print("[BetweenScreen] something went wrong while onScan-systemDevices is done\nError: $e");
@@ -110,16 +112,6 @@ class _BetweenScreenState extends State<BetweenScreen> {
       });
     }
 
-    try{
-      Future.delayed(const Duration(seconds: 10,),(){
-        onConnect(patch.first);
-      });
-    }catch(e){
-      if(kDebugMode){
-        print("[BetweenScreen] something went wrong while onScan-onConnect is done\nError: $e");
-      }
-    }
-
   }
 
   void onConnect(BluetoothDevice device) async{
@@ -128,6 +120,7 @@ class _BetweenScreenState extends State<BetweenScreen> {
       if (kDebugMode) {
         print("[BetweenScreen] on connecting - device: ${device.platformName}");
       }
+
     }catch(e){
       if (kDebugMode) {
         print("[BetweenScreen] something went wrong while onConnect-connectAndUpdateStream is done\nError: $e");
@@ -136,7 +129,10 @@ class _BetweenScreenState extends State<BetweenScreen> {
 
     try{
       for(var element in await device.discoverServices()){
-        if(element.uuid.toString().toUpperCase() == suid) _services.add(element);
+        if(element.uuid.toString().toUpperCase() == suid){
+          _services.add(element);
+          storingService(element);
+        }
       }
       if(kDebugMode){
         print("[BetweenScreen] onConnect - service uuid : ${_services.first.uuid.toString().toUpperCase()}");
@@ -147,8 +143,15 @@ class _BetweenScreenState extends State<BetweenScreen> {
       }
     }
 
-    route = MaterialPageRoute(builder: (context) => HomeScreen(device: device, service: _services.first));
     goHome();
+  }
+
+  void storingService(BluetoothService s){
+    context.read<BLEInfo>().service = s;
+  }
+
+  void storingDevice(BluetoothDevice d){
+    context.read<BLEInfo>().device = d;
   }
 
   void goHome(){
@@ -182,14 +185,14 @@ class _BetweenScreenState extends State<BetweenScreen> {
     }
   }
 
-  Widget screen(){
-    switch(checking){
-      case 1: return Scaffold(body: Center(child: Text("number 1"),));
-      case 2: return Scaffold(body: Center(child: Text("number 2"),));
-      case 3: return HomeScreen(device: patch.first, service: _service);
-      default: return Scaffold(body: Center(child: Text("number 0"),));
-    }
-  }
+  // Widget screen(){
+  //   switch(checking){
+  //     case 1: return const Scaffold(body: Center(child: Text("number 1"),));
+  //     case 2: return const Scaffold(body: Center(child: Text("number 2"),));
+  //     case 3: return const BottomNavigationScreen();
+  //     default: return const Scaffold(body: Center(child: Text("number 0"),));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

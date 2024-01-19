@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ble_uart/screens/bottom_navigation_screen.dart';
 import 'package:ble_uart/screens/home_screen.dart';
+import 'package:ble_uart/utils/ble_info.dart';
 import 'package:ble_uart/utils/extra.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/scan_result_tile.dart';
@@ -19,16 +22,14 @@ class FirstConnectScreen extends StatefulWidget {
 }
 
 class _FirstConnectScreenState extends State<FirstConnectScreen> {
-  List<BluetoothDevice> _systemDevices = []; // FBP에서 제공하는 것 (BluetoothDevice)
-  List<ScanResult> _scanResults = []; // FBP에서 제공하는 것 (ScanResult)
+  final List<ScanResult> _scanResults = []; // FBP에서 제공하는 것 (ScanResult)
   bool _isScanning = false; // 초기값 false
   late StreamSubscription<List<ScanResult>> _scanResultsSubscription; // Stream으로 받아오는 scan result list
   late StreamSubscription<bool> _isScanningSubscription; // Stream으로 bool 값을 가지는 state
 
-  BluetoothConnectionState _connectionState = BluetoothConnectionState.disconnected;
+  final BluetoothConnectionState _connectionState = BluetoothConnectionState.disconnected;
   late StreamSubscription<BluetoothConnectionState> _connectionStateSubscription;
 
-  bool _isDiscoveringServices = false;
   final List<BluetoothService> _services = [];
 
   late Route route;
@@ -84,7 +85,6 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
 
   Future onScan() async { // Scan button pressed
     try {
-      _systemDevices = await FlutterBluePlus.systemDevices;
     } catch (e) {
       if(kDebugMode){
         print("[FirstConnectScreen] something went wrong while onScan-systemDevices is done\nError: $e");
@@ -122,6 +122,7 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
       if (kDebugMode) {
         print("[FirstConnectScreen] onConnectPressed - device: ${device.platformName}");
       }
+      storingDevice(device);
       setSPRemoteId(device.remoteId.str);
     }catch(e){
       if (kDebugMode) {
@@ -139,7 +140,10 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
 
     try{
       for(var element in await device.discoverServices()){
-        if(element.uuid.toString().toUpperCase() == suid) _services.add(element);
+        if(element.uuid.toString().toUpperCase() == suid){
+          _services.add(element);
+          storingService(element);
+        }
       }
       if(kDebugMode){
         print("[FirstConnectScreen] onConnectPressed - service uuid : ${_services.first.uuid.toString().toUpperCase()}");
@@ -151,10 +155,19 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
     }
 
     // TODO: device_screen에서 함수 불러오고 shared preferences의 registered를 true
-    route = MaterialPageRoute(builder: (context) => HomeScreen(device: device, service: _services.first));
+    route = MaterialPageRoute(builder: (context) => const BottomNavigationScreen());
+
     pref = await SharedPreferences.getInstance();
     pref.setBool('registered', true);
     goHome();
+  }
+
+  void storingService(BluetoothService s){
+    context.read<BLEInfo>().service = s;
+  }
+
+  void storingDevice(BluetoothDevice d){
+    context.read<BLEInfo>().device = d;
   }
 
   void goHome(){

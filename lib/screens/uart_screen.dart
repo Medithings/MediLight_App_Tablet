@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:ble_uart/utils/ble_info.dart';
 import 'package:ble_uart/widgets/message_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 import '../utils/snackbar.dart';
 
@@ -22,11 +24,8 @@ TODO: UART communication
 
 
 class UARTScreen extends StatefulWidget {
-  const UARTScreen({super.key, required this.service, required this.deviceName});
+  const UARTScreen({super.key,});
   static const routeName = '/Uart';
-
-  final BluetoothService service;
-  final String deviceName;
   @override
   State<UARTScreen> createState() => _UARTScreenState();
 }
@@ -37,6 +36,9 @@ class _UARTScreenState extends State<UARTScreen> {
 
   final _textCnt = TextEditingController();
   final scrollController = ScrollController();
+
+  late BluetoothDevice device;
+  late BluetoothService service;
 
   final GlobalKey<AnimatedListState> _aniListKey = GlobalKey<AnimatedListState>();
 
@@ -67,13 +69,16 @@ class _UARTScreenState extends State<UARTScreen> {
 
   late StreamSubscription<List<int>> _lastValueSubscription;
 
-  List<BluetoothCharacteristic> get characteristic => widget.service.characteristics;
+  late List<BluetoothCharacteristic> characteristic;
   // late StreamSubscription<BluetoothConnectionState> _connectionStateSubscription;
 
   @override
   void initState() {
     super.initState();
 
+    device = context.read<BLEInfo>().device;
+    service = context.read<BLEInfo>().service;
+    characteristic = context.read<BLEInfo>().service.characteristics;
     // 중간에 connection 이 해제 되었을 때 snackbar => pop
     // _connectionStateSubscription = widget.device.connectionState.listen((state) async {
     //   if(state != BluetoothConnectionState.connected){
@@ -182,7 +187,7 @@ class _UARTScreenState extends State<UARTScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Text(widget.deviceName),
+          title: Text(device.platformName),
           centerTitle: true,
         ),
         body: Column(
