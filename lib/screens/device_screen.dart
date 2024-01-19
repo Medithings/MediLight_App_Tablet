@@ -301,10 +301,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
                   Navigator.pushNamed(
                     context,
                     UARTScreen.routeName,
-                    arguments: ScreenArguments(
-                      _services.first,
-                      widget.device.platformName.toString(),
-                    ),
                   );
                 },
                 child: const Text('UART Communication'),

@@ -8,9 +8,11 @@ import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/screens/onboarding_screen.dart';
 import 'package:ble_uart/screens/uart_screen.dart';
+import 'package:ble_uart/utils/ble_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/bluetooth_off_screen.dart';
 import 'screens/scan_screen.dart';
@@ -18,7 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true); // Log level 을 verbose 로 설정, syntax color on
-  runApp(const FlutterBlueApp());
+  runApp(ChangeNotifierProvider(create: (context) => BLEInfo(), child: const FlutterBlueApp()));
 }
 
 //
@@ -97,29 +99,8 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
       home: firstScreen(),
       navigatorObservers: [BluetoothAdapterStateObserver()], // Navigate Observers
       debugShowCheckedModeBanner: false,
-      onGenerateRoute: (settings){
-        if(settings.name == UARTScreen.routeName){
-          final args = settings.arguments as ScreenArguments;
-
-          return MaterialPageRoute(
-              builder: (context){
-                return UARTScreen(
-                    service: args.service,
-                    deviceName: args.deviceName,
-                );
-              }
-          );
-        }
-      },
     );
   }
-}
-
-class ScreenArguments {
-  final BluetoothService service;
-  final String deviceName;
-
-  ScreenArguments(this.service, this.deviceName);
 }
 
 //
