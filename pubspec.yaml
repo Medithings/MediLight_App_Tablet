@@ -47,6 +47,8 @@ dependencies:
   permission_handler: ^11.1.0
   salomon_bottom_bar: ^3.3.2
   provider: ^6.1.1
+  percent_indicator: ^4.2.3
+  cupertino_battery_indicator: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +85,9 @@ flutter:
     - assets/lottie/second.json
     - assets/lottie/third.json
     - assets/lottie/fourth.json
+    - assets/lottie/walking.json
+    - assets/logo.png
+    - assets/splash.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
