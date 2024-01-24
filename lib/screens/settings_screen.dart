@@ -1,4 +1,5 @@
 import 'package:ble_uart/screens/alarm_set_screen.dart';
+import 'package:ble_uart/screens/uart_screen.dart';
 import 'package:ble_uart/widgets/settings_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -66,7 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: SettingsTile(stIcon: Icons.notifications_rounded, title: "Alarm", goto: const AlarmSetScreen(),),
           ),
           SliverToBoxAdapter(
-            child: SettingsTile(stIcon: Icons.notifications_rounded, title: "Alarm", goto: const AlarmSetScreen(),),
+            child: SettingsTile(stIcon: Icons.notifications_rounded, title: "UART MODE", goto: const UARTScreen(),),
           ),
         ],
       ),

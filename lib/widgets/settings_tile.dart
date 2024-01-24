@@ -19,7 +19,7 @@ class SettingsTile extends StatelessWidget {
       child: Row(
         children: [
           Icon(stIcon),
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold),),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold),),
         ],
       ),
     );
