@@ -14,6 +14,9 @@ class OnBoardingScreen extends StatelessWidget {
 
     return CupertinoApp(
       debugShowCheckedModeBanner: false,
+      theme: const CupertinoThemeData(
+        brightness: Brightness.light,
+      ),
       home: OnBoardingSlider(
         headerBackgroundColor: Colors.white,
         finishButtonText: 'Register',
@@ -22,7 +25,7 @@ class OnBoardingScreen extends StatelessWidget {
           Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => RegisterScreen()),
+                builder: (context) => const RegisterScreen()),
           );
         },
         skipTextButton: Text(
@@ -47,7 +50,7 @@ class OnBoardingScreen extends StatelessWidget {
         // },
         controllerColor: kDarkBlueColor,
         totalPage: 4,
-
+        pageBackgroundColor: Colors.white,
         background: [
           Column(
             children: [

@@ -100,7 +100,7 @@ class _BetweenScreenState extends State<BetweenScreen> {
       // so instead we only ask for 1/8 of them
       int divisor = Platform.isAndroid ? 8 : 1;
       _scanResults.clear();
-      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5), continuousUpdates: true, continuousDivisor: divisor);
+      await FlutterBluePlus.startScan(continuousUpdates: true, continuousDivisor: divisor);
     } catch (e) {
       if(kDebugMode){
         print("[BetweenScreen] something went wrong while onScan-startScan is done\nError: $e");
