@@ -75,11 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _connectionStateSubscription = device.connectionState.listen((state) async {
       _connectionState = state;
+      if(kDebugMode){
+        print("[HomeScreen] initState() state: $state");
+      }
       if(state == BluetoothConnectionState.disconnected){
         setState(() {
           patchState = -1;
+          battery = 0.0;
         });
         _lastValueSubscription.pause();
+        device.connectAndUpdateStream();
         if(kDebugMode){
           print("[HomeScreen] patchState = $patchState");
           print("[HomeScreen] _lastValueSubscription paused?: ${_lastValueSubscription.isPaused == true}");
@@ -325,6 +330,17 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future updating() async{
+    if(_isConnected){
+      reConnect();
+    }
+    else{
+      if(kDebugMode){
+        print("Device is not connected");
+      }
+    }
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -353,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
         leadingWidth: 100,
         actions: [
           InkWell(
-            onTap: updateConnection,
+            onTap: (){},
             child: Column(
               children: [
                 _isConnected? const Icon(Icons.link, size: 30,):const Icon(Icons.link_off, size: 30,),
@@ -365,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: updateConnection,
+        onRefresh: updating,
         child: Column(
           children: [
             Expanded(
