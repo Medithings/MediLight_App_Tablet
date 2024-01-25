@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/uart_screen.dart';
@@ -24,7 +25,10 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin<HomeScreen> {
+
+  @override
+  bool get wantKeepAlive => true;
 
   static const String rx = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"; // write data to the rx characteristic to send it to the UART interface.
   static const String tx = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"; // Enable notifications for the tx characteristic to receive data from the application.
@@ -53,6 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String todayString = "";
   int read = 0;
 
+  final bool _isAndroid = Platform.isAndroid;
+
 
   @override
   void initState() {
@@ -71,20 +77,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
     msg.clear();
 
+    if(_connectionState == BluetoothConnectionState.disconnected){
+      if(kDebugMode){
+        print("[HomeScreen] The device is disconnected");
+      }
+      device.connectAndUpdateStream();
+    }
     // msg.add("START!");
 
     _connectionStateSubscription = device.connectionState.listen((state) async {
       _connectionState = state;
+
       if(kDebugMode){
         print("[HomeScreen] initState() state: $state");
       }
+
       if(state == BluetoothConnectionState.disconnected){
         setState(() {
           patchState = -1;
           battery = 0.0;
         });
-        _lastValueSubscription.pause();
         device.connectAndUpdateStream();
+        _lastValueSubscription.pause();
         if(kDebugMode){
           print("[HomeScreen] patchState = $patchState");
           print("[HomeScreen] _lastValueSubscription paused?: ${_lastValueSubscription.isPaused == true}");
