@@ -99,6 +99,9 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
       home: firstScreen(),
       navigatorObservers: [BluetoothAdapterStateObserver()], // Navigate Observers
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(brightness: Brightness.light,),
+      darkTheme: ThemeData(brightness: Brightness.light),
+      themeMode: ThemeMode.light,
     );
   }
 }
