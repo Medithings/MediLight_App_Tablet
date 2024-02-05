@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ble_uart/screens/ai_screen.dart';
 import 'package:ble_uart/screens/bottom_navigation_screen.dart';
 import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/utils/ble_info.dart';
@@ -155,11 +156,11 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
     }
 
     // TODO: device_screen에서 함수 불러오고 shared preferences의 registered를 true
-    route = MaterialPageRoute(builder: (context) => const BottomNavigationScreen());
+    route = MaterialPageRoute(builder: (context) => const AIScreen());
 
     pref = await SharedPreferences.getInstance();
-    pref.setBool('registered', true);
-    goHome();
+    // pref.setBool('registered', true);
+    goAI();
   }
 
   void storingService(BluetoothService s){
@@ -170,7 +171,7 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
     context.read<BLEInfo>().device = d;
   }
 
-  void goHome(){
+  void goAI(){
     Navigator.pushReplacement(context, route);
   }
 

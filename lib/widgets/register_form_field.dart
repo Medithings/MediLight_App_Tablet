@@ -102,7 +102,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
             children: [
               FormBuilderTextField(
                 name: 'name',
-                decoration: const InputDecoration(labelText: 'Insert name', hintText: "David"),
+                decoration: const InputDecoration(labelText: 'Insert name', hintText: "ex) David"),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
                 ]),
@@ -111,16 +111,16 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
               FormBuilderTextField(
                 keyboardType: TextInputType.number,
                 name: 'age',
-                decoration: const InputDecoration(labelText: 'Insert age', hintText: "25"),
+                decoration: const InputDecoration(labelText: 'Insert age', hintText: "ex) 25"),
                 validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(),
+                  // FormBuilderValidators.required(),
                 ]),
               ),
               const SizedBox(height: 15,),
               FormBuilderTextField(
                 keyboardType: TextInputType.number,
                 name: 'height',
-                decoration: const InputDecoration(labelText: 'Insert height', hintText: "178"),
+                decoration: const InputDecoration(labelText: 'Insert height', hintText: "ex) 178"),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
                 ]),
@@ -129,7 +129,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
               FormBuilderTextField(
                 keyboardType: TextInputType.number,
                 name: 'weight',
-                decoration: const InputDecoration(labelText: 'Insert weight', hintText: "70"),
+                decoration: const InputDecoration(labelText: 'Insert weight', hintText: "ex) 70"),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
                 ]),

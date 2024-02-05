@@ -77,9 +77,10 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
 
   @override
   Widget build(BuildContext context) {
-    Widget screen = _adapterState == BluetoothAdapterState.on
-        ? ScanScreen() // if the device's bluetooth is on then widget to ScanScreen()
-        : BluetoothOffScreen(adapterState: _adapterState); // else widget to BluetoothOffScreen() with current state
+    // NO NEED
+    // Widget screen = _adapterState == BluetoothAdapterState.on
+    //     ? ScanScreen() // if the device's bluetooth is on then widget to ScanScreen()
+    //     : BluetoothOffScreen(adapterState: _adapterState); // else widget to BluetoothOffScreen() with current state
 
     // prefGetter();
     Widget firstScreen(){

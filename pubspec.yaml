@@ -49,6 +49,8 @@ dependencies:
   provider: ^6.1.1
   percent_indicator: ^4.2.3
   cupertino_battery_indicator: ^1.1.0
+  sqflite: ^2.3.2
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +90,7 @@ flutter:
     - assets/lottie/walking.json
     - assets/logo.png
     - assets/splash.png
+    - assets/lottie/bluetooth_connection.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
