@@ -29,7 +29,7 @@ class OnBoardingScreen extends StatelessWidget {
           );
         },
         skipTextButton: Text(
-          'Skip',
+          'skip',
           style: TextStyle(
             fontSize: 17,
             color: kDarkBlueColor,

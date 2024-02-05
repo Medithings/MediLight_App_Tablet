@@ -7,6 +7,7 @@ import 'package:ble_uart/utils/extra.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -202,9 +203,16 @@ class _BetweenScreenState extends State<BetweenScreen> {
       ),
       body: Center(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const Spacer(flex: 1,),
+            Lottie.asset("assets/lottie/bluetooth_connection.json"),
+            const SizedBox(height: 20,),
             const Text("Wait for a moment"),
             Text("checking : $checking"),
+            const Spacer(flex: 3,),
           ],
         ),
       ),
