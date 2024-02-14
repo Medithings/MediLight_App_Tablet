@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:ble_uart/screens/ai_screen.dart';
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/uart_screen.dart';
 import 'package:ble_uart/utils/ble_info.dart';
 import 'package:ble_uart/utils/extra.dart';
-import 'package:ble_uart/utils/parsing.dart';
+import 'package:ble_uart/utils/parsing_measured.dart';
 import 'package:cupertino_battery_indicator/cupertino_battery_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -62,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   int read = 0;
 
   bool measuring = false;
+  bool didInitialSet = false;
+  bool areYouGoingToWrite = false;
 
   final bool _isAndroid = Platform.isAndroid;
 
@@ -85,6 +88,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     msg.clear();
     tjmsg.clear();
 
+    didInitialSet = false;
+    areYouGoingToWrite = false;
+
     if(_connectionState == BluetoothConnectionState.disconnected){
       if(kDebugMode){
         print("[HomeScreen] The device is disconnected");
@@ -102,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
       if(state == BluetoothConnectionState.disconnected){
         setState(() {
-          patchState = -1;
+          patchState = 0; // TODO: 0으로 바꿔기
           battery = 0.0;
         });
         device.connectAndUpdateStream();
@@ -220,103 +226,211 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     if(msgString != ""){
       msg.add(msgString);
 
-      if(patchState == 0){
-        if(msgString.contains("Ready")) {
-          setState(() {
-            patchState = 1;
-          });
-
-          write("Sn");
-
-          if(kDebugMode){
-            print("[HomeScreen] checking() : patchState $patchState");
-          }
-        } else {
-          if(msgString.contains("Return1")){
+      switch(patchState){
+        case -1: {
+          if(msgString.contains("Ready")){
             setState(() {
-              patchState = 2;
+              patchState = 1;
             });
-            write("Sj");
+            write("Sn");
+          }
+          else{
+            write("St");
+            setState(() {
+              patchState = 0;
+            });
+          }
+        }
+        break;
+
+        case 0: {
+          if(msgString.contains("Ready")) {
+            setState(() {
+              patchState = 1;
+            });
+
+            write("Sn");
+
             if(kDebugMode){
               print("[HomeScreen] checking() : patchState $patchState");
-              print("Listened Return1 ==> Write Tj");
             }
-          }else{
+          }
+          else{
             setState(() {
               patchState = -1;
             });
           }
+        }
+        break; // Ready
 
-          if(kDebugMode){
-            print("[HomeScreen] checking() : patchState $patchState");
+        case 1: {
+          if(msgString.contains("Tn")){
+            if(kDebugMode){
+              print("[HomeScreen] checking() Tn: patchState $patchState");
+            }
+            String result = msg.last.replaceAll(RegExp(r'[^0-9]'), "");
+            battery = double.parse(result);
+            if(kDebugMode){
+              print("Battery : $battery");
+            }
+            if(battery >= 4000.0){
+              battery = 1.0;
+            }else {
+              battery -= 3600.0;
+              battery /= 400.0;
+            }
+
+            if(kDebugMode){
+              print("Battery : $battery");
+            }
+
+            if(!didInitialSet){
+              if(kDebugMode){
+                print("[HomeScreen] Checking didInitialSet: $didInitialSet");
+              }
+
+              setState(() {
+                patchState = 2;
+              });
+
+              if (kDebugMode) {
+                print("[HomeScreen] Checking set patchState: $patchState");
+              }
+              // write("Sm0, 100");
+              write("status1");
+            }
+            else{
+              if(kDebugMode){
+                print("[HomeScreen] Checking didInitialSet: $didInitialSet");
+              }
+
+              setState(() {
+                patchState = 6;
+              });
+
+              // TODO: 일단은 Home에서는 측정 기능만 있고 측정 때만 ble를 사용하기 때문에 그냥 Sj 여기에다 넣었는데 이후에 어떻게될지 모른다
+              write("status1");
+
+              if (kDebugMode) {
+                print("[HomeScreen] Checking set patchState: $patchState");
+              }
+            } // if - else: didInitialSet
+          } // if: msgString.contains("Tn")
+
+          else{
+            setState(() {
+              patchState = -1;
+            });
+          } // else: msgString.contains("Tn")
+        }
+        break; // Sn
+
+        case 2:
+          {
+            if(msgString.contains("Return1")){
+              setState(() {
+                patchState = 3;
+              });
+              write("Sm0, 100");
+            }
+            else{
+              setState(() {
+                patchState = -1;
+              });
+            }
+          }
+          break; // status1
+
+        case 3:{
+          if(msgString.contains("Tm0")){
+            setState(() {
+              patchState = 4;
+            });
+            write("Sl0, 5000");
+          }
+
+          else{
+            setState(() {
+              patchState = -1;
+            });
           }
         }
-      }
+        break; // Sm
 
-      if(patchState == -1){
-        if(kDebugMode){
-          print("[HomeScreen] patch state should be -1: $patchState");
-        }
-        if(msgString.contains("Ready")){
-          setState(() {
-            patchState = 1;
-            write("Sn");
-            // checking(msgString);
-          });
-        }
-      }
-
-      if(patchState == 1 && msgString.contains("Tn")){
-        if(kDebugMode){
-          print("[HomeScreen] checking() Tn: patchState $patchState");
-        }
-        String result = msg.last.replaceAll(RegExp(r'[^0-9]'), "");
-        battery = double.parse(result);
-        if(kDebugMode){
-          print("Battery : $battery");
-        }
-        if(battery >= 4000.0){
-          battery = 1.0;
-        }else {
-          battery -= 3600.0;
-          battery /= 400.0;
-        }
-
-        if(kDebugMode){
-          print("Battery : $battery");
-        }
-
-        setState(() {
-          patchState = 0;
-          if(kDebugMode){
-            print("[HomeScreen] checking()-Tn: patch state should be 0: $patchState");
+        case 4:{
+          if(msgString.contains("Tl0")){
+            setState(() {
+              patchState = 5;
+            });
+            write("Sk0, 8");
           }
-        });
 
-        if(mounted){
-          setState(() {
-
-          });
-        }
-      }
-
-      if(patchState == 2 && msgString.contains("Tj")){
-        if(kDebugMode){
-          print("[HomeScreen] checking() Tj: patchState $patchState");
-        }
-        tjmsg.add(msgString);
-        if(tjmsg.length % 24 == 0 && tjmsg.isNotEmpty){
-          var timeStampForDB = DateFormat("yyyyMMddhhmm").format(DateTime.now());
-          Parsing(timeStampForDB, tjmsg);
-          if(kDebugMode){
-            print("[HOMESCREEN] PARSING DONE");
+          else{
+            setState(() {
+              patchState = -1;
+            });
           }
-          write("status0");
-          setState(() {
-            patchState = 0;
-            measuring = false;
-          });
         }
+        break; // Sl
+
+        case 5: {
+          if(msgString.contains("Tk0")){
+            setState(() {
+              didInitialSet = true;
+            });
+            write("status0");
+          }
+          else{
+            setState(() {
+              patchState = -1;
+            });
+          }
+        }
+        break; // Sk
+
+        case 6:{
+          if(msgString.contains("Return1")){
+            write("Sj");
+            setState(() {
+              patchState = 7;
+            });
+          }
+          else{
+            setState(() {
+              patchState = -1;
+            });
+          }
+        }
+
+        case 7:{
+          if(msgString.contains("Tj")){
+            if(kDebugMode){
+              print("[HomeScreen] checking() Tj: patchState $patchState");
+            }
+            tjmsg.add(msgString);
+            if(tjmsg.length % 24 == 0 && tjmsg.isNotEmpty){
+              var timeStampForDB = DateFormat("yyyyMMddhhmm").format(DateTime.now());
+              ParsingMeasured(timeStampForDB, tjmsg);
+              if(kDebugMode){
+                print("[HOMESCREEN] PARSING DONE");
+              }
+              write("status0");
+              setState(() {
+                patchState = 0;
+                measuring = false;
+                areYouGoingToWrite = false;
+              });
+            }
+          }
+          else{
+            setState(() {
+              patchState = -1;
+            });
+          }
+        }
+        break; // sj
+
+        default: patchState = -1; break;
       }
     }
 
@@ -398,8 +512,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   }
 
   Future measure() async{
+    areYouGoingToWrite = true;
     reConnect().then((value){
-      write("status1");
+      // write("Sj");
     });
   }
 

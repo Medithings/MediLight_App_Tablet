@@ -144,6 +144,7 @@ class _BetweenScreenState extends State<BetweenScreen> {
       }
     }
 
+    // TODO: if registered is true goHome
     goHome();
   }
 

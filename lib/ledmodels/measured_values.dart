@@ -1,4 +1,4 @@
-class GainValues {
+class MeasuredValues {
   final String? timeStamp;
   final String? lednum;
   final double? one;
@@ -14,7 +14,7 @@ class GainValues {
   final double? eleven;
   final double? twelve;
 
-  GainValues({
+  MeasuredValues({
     this.timeStamp,
     this.lednum,
     this.one,
