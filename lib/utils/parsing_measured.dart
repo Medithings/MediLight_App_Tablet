@@ -1,7 +1,7 @@
-import 'package:ble_uart/ledmodels/gain_values.dart';
+import 'package:ble_uart/ledmodels/measured_values.dart';
 import 'package:ble_uart/utils/database.dart';
 
-void Parsing(String getTimeStamp, List<String> gain) async{
+void ParsingMeasured(String getTimeStamp, List<String> gain) async{
   final _model = DatabaseModel();
   var db = _model.database;
 
@@ -36,7 +36,7 @@ void Parsing(String getTimeStamp, List<String> gain) async{
     eleven = double.parse(splitted[11].trim());
     twelve = double.parse(splitted[12].trim());
 
-    await _model.insertingGain(GainValues(
+    await _model.insertingMeasured(MeasuredValues(
         timeStamp: getTimeStamp,
         lednum: ledNum,
         one: one,

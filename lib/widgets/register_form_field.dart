@@ -1,3 +1,4 @@
+import 'package:ble_uart/screens/ai_screen.dart';
 import 'package:ble_uart/screens/first_connect_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

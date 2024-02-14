@@ -40,7 +40,12 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies(){
+    super.didChangeDependencies();
     onScan();
 
     _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) { // Scan result 를 listen
@@ -73,8 +78,6 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
         setState(() {}); // set state
       }
     });
-
-    super.initState();
   }
 
   @override
@@ -158,9 +161,11 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
     // TODO: device_screen에서 함수 불러오고 shared preferences의 registered를 true
     route = MaterialPageRoute(builder: (context) => const AIScreen());
 
-    pref = await SharedPreferences.getInstance();
+    // pref = await SharedPreferences.getInstance();
     // pref.setBool('registered', true);
-    goAI();
+    Future.delayed(Duration.zero,(){
+      goAI();
+    });
   }
 
   void storingService(BluetoothService s){

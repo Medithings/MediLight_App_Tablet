@@ -22,7 +22,7 @@ class OnBoardingScreen extends StatelessWidget {
         finishButtonText: 'Register',
         finishButtonStyle: const FinishButtonStyle(backgroundColor: Colors.blueGrey,),
         onFinish: (){
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             CupertinoPageRoute(
                 builder: (context) => const RegisterScreen()),
