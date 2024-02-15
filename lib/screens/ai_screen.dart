@@ -3,9 +3,6 @@ import 'dart:convert';
 
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/bottom_navigation_screen.dart';
-import 'package:ble_uart/screens/home_screen.dart';
-import 'package:ble_uart/screens/scan_screen.dart';
-import 'package:ble_uart/screens/training_screen.dart';
 import 'package:ble_uart/utils/extra.dart';
 import 'package:ble_uart/utils/parsing_agc.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,7 +13,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/ble_info.dart';
-import '../utils/parsing_measured.dart';
 
 class AIScreen extends StatefulWidget {
   const AIScreen({super.key});
@@ -42,8 +38,8 @@ class _AIScreenState extends State<AIScreen> {
   bool _isConnected = false;
   int? _rssi;
 
-  int idx_tx = 1;
-  int idx_rx = 0;
+  int idxTx = 1;
+  int idxRx = 0;
 
   List<String> msg = [];
   List<String> agcMsg = [];
@@ -52,7 +48,6 @@ class _AIScreenState extends State<AIScreen> {
   double battery = 0.0;
 
   String todayString = "";
-  int read = 0;
 
   bool measuring = false;
 
@@ -152,14 +147,14 @@ class _AIScreenState extends State<AIScreen> {
     }
 
     switch (characteristic.first.uuid.toString().toUpperCase()){
-      case rx: idx_tx = 1; idx_rx = 0;
+      case rx: idxTx = 1; idxRx = 0;
       if (kDebugMode) {
-        print("rx = ${characteristic[idx_rx].uuid.toString().toUpperCase()}\ntx = ${characteristic[idx_tx].uuid.toString().toUpperCase()}");
+        print("rx = ${characteristic[idxRx].uuid.toString().toUpperCase()}\ntx = ${characteristic[idxTx].uuid.toString().toUpperCase()}");
       }
       break;
-      case tx: idx_tx = 0; idx_rx = 1;
+      case tx: idxTx = 0; idxRx = 1;
       if (kDebugMode) {
-        print("rx = ${characteristic[idx_rx].uuid.toString().toUpperCase()}\ntx = ${characteristic[idx_tx].uuid.toString().toUpperCase()}");
+        print("rx = ${characteristic[idxRx].uuid.toString().toUpperCase()}\ntx = ${characteristic[idxTx].uuid.toString().toUpperCase()}");
       }
       break;
       default:
@@ -175,7 +170,7 @@ class _AIScreenState extends State<AIScreen> {
       print("[AIScreen] listeningToChar(): Before set notify value discover services");
     }
 
-    _lastValueSubscription = characteristic[idx_tx].lastValueStream.listen((value) async {
+    _lastValueSubscription = characteristic[idxTx].lastValueStream.listen((value) async {
       String convertedStr = utf8.decode(value).trimRight();
 
       if(kDebugMode){
@@ -191,10 +186,10 @@ class _AIScreenState extends State<AIScreen> {
 
     device.cancelWhenDisconnected(_lastValueSubscription);
 
-    characteristic[idx_tx].setNotifyValue(true);
+    characteristic[idxTx].setNotifyValue(true);
 
     if (kDebugMode) {
-      print("tx = ${characteristic[idx_tx].uuid.toString().toUpperCase()}\nset notify");
+      print("tx = ${characteristic[idxTx].uuid.toString().toUpperCase()}\nset notify");
     }
 
   }
@@ -322,9 +317,9 @@ class _AIScreenState extends State<AIScreen> {
       if(kDebugMode){
         print("[AIScreen] write() discoverServices then");
       }
-      await characteristic[idx_rx].write(utf8.encode(text), withoutResponse: characteristic[idx_rx].properties.writeWithoutResponse);
+      await characteristic[idxRx].write(utf8.encode(text), withoutResponse: characteristic[idxRx].properties.writeWithoutResponse);
       if(kDebugMode){
-        print("[AIScreen] write() write characteristic[idx_tx] then");
+        print("[AIScreen] write() write characteristic[idxTx] then");
       }
 
       if (kDebugMode) {

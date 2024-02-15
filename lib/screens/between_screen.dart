@@ -25,8 +25,6 @@ class _BetweenScreenState extends State<BetweenScreen> {
   final List<ScanResult> _scanResults = []; // FBP에서 제공하는 것 (ScanResult)
   List<BluetoothDevice> patch = []; // FBP에서 제공하는 것 (BluetoothDevice)
   final List<BluetoothService> _services = [];
-  late BluetoothService _service;
-  late StreamSubscription<BluetoothConnectionState> _connectionStateSubscription;
   late List<BluetoothCharacteristic> characteristics;
   late Route route = MaterialPageRoute(builder: (context) => const BottomNavigationScreen());
 
