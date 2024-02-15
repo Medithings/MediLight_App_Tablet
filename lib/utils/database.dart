@@ -61,9 +61,10 @@ class DatabaseModel{
       led23 REAL,
       led24 REAL,
       led25 REAL,
-      PRIMARY KEY(timeStamp, LEDNUM)
+      PRIMARY KEY(timeStamp)
       );
     ''';
+    // TODO: indexing LEDNUM
     db.execute(sqlAgctable);
 
     String sqlMeasuredtable=''' 
@@ -82,9 +83,10 @@ class DatabaseModel{
       ten REAL,
       eleven REAL,
       twelve REAL,
-      PRIMARY KEY(timeStamp, LEDNUM)
+      PRIMARY KEY(timeStamp)
       );
     ''';
+    // TODO: indexing LEDNUM
     db.execute(sqlMeasuredtable);
 
     String sqlLedPd = '''

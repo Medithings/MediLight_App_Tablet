@@ -50,8 +50,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   bool _isConnected = false;
   int? _rssi;
 
-  int idx_tx = 1;
-  int idx_rx = 0;
+  int idxTx = 1;
+  int idxRx = 0;
 
   List<String> msg = [];
   List<String> tjmsg = [];
@@ -60,15 +60,10 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   double battery = 0.0;
 
   String todayString = "";
-  int read = 0;
 
   bool measuring = false;
   bool didInitialSet = false;
   bool areYouGoingToWrite = false;
-
-  final bool _isAndroid = Platform.isAndroid;
-
-  late DatabaseModel _dbModel;
 
   @override
   void initState() {
@@ -170,14 +165,14 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     }
 
     switch (characteristic.first.uuid.toString().toUpperCase()){
-      case rx: idx_tx = 1; idx_rx = 0;
+      case rx: idxTx = 1; idxRx = 0;
       if (kDebugMode) {
-        print("rx = ${characteristic[idx_rx].uuid.toString().toUpperCase()}\ntx = ${characteristic[idx_tx].uuid.toString().toUpperCase()}");
+        print("rx = ${characteristic[idxRx].uuid.toString().toUpperCase()}\ntx = ${characteristic[idxTx].uuid.toString().toUpperCase()}");
       }
       break;
-      case tx: idx_tx = 0; idx_rx = 1;
+      case tx: idxTx = 0; idxRx = 1;
       if (kDebugMode) {
-        print("rx = ${characteristic[idx_rx].uuid.toString().toUpperCase()}\ntx = ${characteristic[idx_tx].uuid.toString().toUpperCase()}");
+        print("rx = ${characteristic[idxRx].uuid.toString().toUpperCase()}\ntx = ${characteristic[idxTx].uuid.toString().toUpperCase()}");
       }
       break;
       default:
@@ -193,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       print("[HomeScreen] listeningToChar(): Before set notify value discover services");
     }
 
-    _lastValueSubscription = characteristic[idx_tx].lastValueStream.listen((value) async {
+    _lastValueSubscription = characteristic[idxTx].lastValueStream.listen((value) async {
       String convertedStr = utf8.decode(value).trimRight();
 
       if(kDebugMode){
@@ -209,10 +204,10 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
     device.cancelWhenDisconnected(_lastValueSubscription);
 
-    characteristic[idx_tx].setNotifyValue(true);
+    characteristic[idxTx].setNotifyValue(true);
 
     if (kDebugMode) {
-      print("tx = ${characteristic[idx_tx].uuid.toString().toUpperCase()}\nset notify");
+      print("tx = ${characteristic[idxTx].uuid.toString().toUpperCase()}\nset notify");
     }
 
   }
@@ -462,9 +457,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       if(kDebugMode){
         print("[HomeScreen] write() discoverServices then");
       }
-      await characteristic[idx_rx].write(utf8.encode(text), withoutResponse: characteristic[idx_rx].properties.writeWithoutResponse);
+      await characteristic[idxRx].write(utf8.encode(text), withoutResponse: characteristic[idxRx].properties.writeWithoutResponse);
       if(kDebugMode){
-        print("[HomeScreen] write() write characteristic[idx_tx] then");
+        print("[HomeScreen] write() write characteristic[idxTx] then");
       }
 
       if (kDebugMode) {
