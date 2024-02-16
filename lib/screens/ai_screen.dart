@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/ble_info.dart';
 
@@ -50,6 +51,8 @@ class _AIScreenState extends State<AIScreen> {
   String todayString = "";
 
   bool measuring = false;
+
+  late SharedPreferences pref;
 
   @override
   void initState() {
@@ -425,6 +428,11 @@ class _AIScreenState extends State<AIScreen> {
     );
   }
 
+  void setPref() async {
+    pref = await SharedPreferences.getInstance();
+    pref.setBool('registered', true);
+  }
+
   void trainConfirm(){
     showDialog(
         context: context,
@@ -449,6 +457,7 @@ class _AIScreenState extends State<AIScreen> {
               ),
               ElevatedButton(
                 onPressed: (){
+                  setPref();
                   late Route route = MaterialPageRoute(builder: (context) => const BottomNavigationScreen());
                   Navigator.of(context).popUntil((rr) => rr.isFirst);
                   Navigator.pushReplacement(context, route);

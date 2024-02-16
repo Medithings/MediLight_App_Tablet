@@ -61,7 +61,7 @@ class DatabaseModel{
       led23 REAL,
       led24 REAL,
       led25 REAL,
-      PRIMARY KEY(timeStamp)
+      PRIMARY KEY(timeStamp, LEDNUM)
       );
     ''';
     // TODO: indexing LEDNUM
@@ -83,7 +83,7 @@ class DatabaseModel{
       ten REAL,
       eleven REAL,
       twelve REAL,
-      PRIMARY KEY(timeStamp)
+      PRIMARY KEY(timeStamp, LEDNUM)
       );
     ''';
     // TODO: indexing LEDNUM
@@ -116,8 +116,8 @@ class DatabaseModel{
     var db = await database;
 
     await db.insert(
-      'measured_values',
-      item.toMap()
+        'measured_values',
+        item.toMap()
     );
   }
 
@@ -125,8 +125,8 @@ class DatabaseModel{
     var db = await database;
 
     await db.insert(
-      'agc_values',
-      item.toMap()
+        'agc_values',
+        item.toMap()
     );
   }
 
@@ -135,21 +135,21 @@ class DatabaseModel{
 
     for(int i=0; i<4; i++){
       await db.insert(
-        'LED_PD',
-        {'LEDNUM' : item.lednum[i],
-          'one' : item.one[i],
-          'two' : item.two[i],
-          'three' : item.three[i],
-          'four' : item.four[i],
-          'five' : item.five[i],
-          'six' : item.six[i],
-          'seven' : item.seven[i],
-          'eight' : item.eight[i],
-          'nine' : item.nine[i],
-          'ten' : item.ten[i],
-          'eleven' : item.eleven[i],
-          'twelve' : item.twelve[i],
-        }
+          'LED_PD',
+          {'LEDNUM' : item.lednum[i],
+            'one' : item.one[i],
+            'two' : item.two[i],
+            'three' : item.three[i],
+            'four' : item.four[i],
+            'five' : item.five[i],
+            'six' : item.six[i],
+            'seven' : item.seven[i],
+            'eight' : item.eight[i],
+            'nine' : item.nine[i],
+            'ten' : item.ten[i],
+            'eleven' : item.eleven[i],
+            'twelve' : item.twelve[i],
+          }
       );
     }
 
@@ -172,4 +172,3 @@ class LED_PD {
   final List<String> eleven = ['pd19', 'pd12', 'pd9', 'pd2'];
   final List<String> twelve = ['pd20', 'pd11', 'pd10', 'pd1'];
 }
-
