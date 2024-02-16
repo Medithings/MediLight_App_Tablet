@@ -45,17 +45,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          const SliverAppBar(
-            title: Align(alignment: Alignment.centerLeft, child: Text("Settings")),
-            floating: true,
-            // flexibleSpace: Placeholder(),
-            expandedHeight: 200,
-          ),
           const SliverToBoxAdapter(
-            child: Text('Account', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
+            child: SizedBox(height: 50,),
+          ),
+          const SliverAppBar(
+            title: Align(alignment: Alignment.centerLeft, child: Text("Settings", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,),)),
+            floating: true,
+            centerTitle: true,
+            // flexibleSpace: Placeholder(),
+            expandedHeight: 50,
           ),
           SliverToBoxAdapter(
-            child: SettingsTile(stIcon: Icons.person, title: name, goto: const AccountScreen(),),
+            child: SettingsTile(stIcon: Icons.person, title: name, goto: const AccountScreen(), bgColor: Colors.blueAccent,),
           ),
           const SliverToBoxAdapter(
             child: SizedBox(height: 20,),
@@ -64,10 +65,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Text('Settings', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
           ),
           SliverToBoxAdapter(
-            child: SettingsTile(stIcon: Icons.notifications_rounded, title: "Alarm", goto: const AlarmSetScreen(),),
+            child: SettingsTile(stIcon: Icons.notifications_rounded, title: "Alarm", goto: const AlarmSetScreen(), bgColor: Colors.redAccent,),
           ),
           SliverToBoxAdapter(
-            child: SettingsTile(stIcon: Icons.notifications_rounded, title: "UART MODE", goto: const UARTScreen(),),
+            child: SettingsTile(stIcon: Icons.rocket_launch_rounded, title: "UART MODE", goto: const UARTScreen(), bgColor: Colors.grey,),
           ),
         ],
       ),
