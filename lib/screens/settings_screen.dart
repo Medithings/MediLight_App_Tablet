@@ -43,32 +43,120 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(225, 225, 225, 0.3),
       body: CustomScrollView(
         slivers: [
           const SliverToBoxAdapter(
             child: SizedBox(height: 50,),
           ),
           const SliverAppBar(
+            backgroundColor: Colors.transparent,
             title: Align(alignment: Alignment.centerLeft, child: Text("Settings", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,),)),
             floating: true,
             centerTitle: true,
             // flexibleSpace: Placeholder(),
             expandedHeight: 50,
           ),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 15,),
+          ),
           SliverToBoxAdapter(
-            child: SettingsTile(stIcon: Icons.person, title: name, goto: const AccountScreen(), bgColor: Colors.blueAccent,),
+            child: Container(
+              height: 70,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(color: Color.fromRGBO(225, 225, 225, 1),),
+                  bottom: BorderSide(color: Color.fromRGBO(225, 225, 225, 1),),
+                ),
+              ),
+              child: InkWell(
+                onTap: () => Navigator.of(context).push(CupertinoPageRoute(builder: (context) => const AccountScreen(),),),
+                child: Row(
+                  children: [
+                    Container(
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.transparent),
+                            color: Colors.black12,
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(30),
+                            ),
+                          ),
+                          child: const Icon(Icons.person, color: Colors.black38, size: 30,),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 15,),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(name, style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 25,),),
+                        const Text("Account Settings", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15,),),
+                      ],
+                    ),
+                    const Spacer(flex: 1,),
+                    const Icon(Icons.arrow_forward_ios_rounded, color: Colors.black38, size: 15,),
+                    const SizedBox(width: 10,),
+                  ],
+                ),
+              ),
+            ),
           ),
           const SliverToBoxAdapter(
             child: SizedBox(height: 20,),
           ),
+          SliverToBoxAdapter(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: Color.fromRGBO(225, 225, 225, 1),),
+                      )
+                    ),
+                    child: SettingsTile(stIcon: Icons.notifications_rounded, title: "Alarm", goto: const AlarmSetScreen(), bgColor: Colors.redAccent,),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 56.0),
+                    child: Divider(color: Color.fromRGBO(225, 225, 225, 1), height: 1,),
+                  ),
+                  Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Color.fromRGBO(225, 225, 225, 1),),
+                      )
+                    ),
+                    child: SettingsTile(stIcon: Icons.rocket_launch_rounded, title: "UART MODE", goto: const UARTScreen(), bgColor: Colors.grey,),
+                  ),
+                ],
+              ),
+            ),
+          ),
           const SliverToBoxAdapter(
-            child: Text('Settings', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
+            child: SizedBox(height: 20,),
           ),
           SliverToBoxAdapter(
-            child: SettingsTile(stIcon: Icons.notifications_rounded, title: "Alarm", goto: const AlarmSetScreen(), bgColor: Colors.redAccent,),
-          ),
-          SliverToBoxAdapter(
-            child: SettingsTile(stIcon: Icons.rocket_launch_rounded, title: "UART MODE", goto: const UARTScreen(), bgColor: Colors.grey,),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(color: Color.fromRGBO(225, 225, 225, 1),),
+                  bottom: BorderSide(color: Color.fromRGBO(225, 225, 225, 1),),
+                ),
+              ),
+              child: SettingsTile(stIcon: Icons.info, title: "Patch info", goto: const UARTScreen(), bgColor: Colors.blueAccent,),
+            ),
           ),
         ],
       ),

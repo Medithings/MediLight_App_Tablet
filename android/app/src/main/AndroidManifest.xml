@@ -44,7 +44,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
 
     <application
-        android:label="ble_uart"
+        android:label="MediLight"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
