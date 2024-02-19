@@ -70,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   late int level;
   late int maxLevel;
   late int levelIdx;
+  late double riveIdx;
   late StateMachineController _stmController;
   SMIInput<double>? _numberExampleInput;
   ValueNotifier<double> batteryValue = ValueNotifier(0);
@@ -105,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     maxLevel = 8;
     levelIdx = 0;
     batteryValue.value = 0;
+    riveIdx = -1;
 
     if(_connectionState == BluetoothConnectionState.disconnected){
       if(kDebugMode){
@@ -117,6 +119,18 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     _connectionStateSubscription = device.connectionState.listen((state) async {
       _connectionState = state;
 
+      switch(state){
+        case BluetoothConnectionState.connected : _isConnected = true; break;
+        case BluetoothConnectionState.disconnected: _isConnected = false; break;
+        default: _isConnected = false; break;
+      }
+      if (state == BluetoothConnectionState.connected && _rssi == null) {
+        _rssi = await device.readRssi();
+      }
+      if (mounted) {
+        setState(() {});
+      }
+
       if(kDebugMode){
         print("[HomeScreen] initState() state: $state");
       }
@@ -125,7 +139,12 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         setState(() {
           patchState = 0;
           battery = 0.0;
+          batteryValue.value = 0;
+          didInitialSet = false;
+          level = -1;
+          _numberExampleInput?.value = -1.0;
         });
+        updatingLevelIdx();
         device.connectAndUpdateStream();
         _lastValueSubscription.pause();
         if(kDebugMode){
@@ -137,6 +156,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         if(kDebugMode){
           print("-------[HomeScreen] _connectionState listeningToChar()-------");
         }
+        updatingLevelIdx();
         listeningToChar();
         if(kDebugMode){
           print("-------[HomeScreen] _connectionState listeningToChar() done-------");
@@ -159,17 +179,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           print("[HomeScreen] _lastValueSubscription paused?: ${_lastValueSubscription.isPaused == true}");
         }
       }
-      switch(state){
-        case BluetoothConnectionState.connected : _isConnected = true; break;
-        case BluetoothConnectionState.disconnected: _isConnected = false; break;
-        default: _isConnected = false; break;
-      }
-      if (state == BluetoothConnectionState.connected && _rssi == null) {
-        _rssi = await device.readRssi();
-      }
-      if (mounted) {
-        setState(() {});
-      }
+
     });
   }
 
@@ -406,10 +416,14 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
         case 6:{
           if(msgString.contains("Return1")){
-            write("Sj");
             setState(() {
               patchState = 7;
             });
+            if(areYouGoingToWrite) {
+              write("Sj");
+            } else {
+              write("status0");
+            }
           }
           else{
             setState(() {
@@ -438,6 +452,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 areYouGoingToWrite = false;
               });
             }
+          }
+          else if(msgString.contains("Return0")){
+            setState(() {
+              patchState = 0;
+            });
           }
           else{
             setState(() {
@@ -528,7 +547,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   }
 
   Future measure() async{
-    areYouGoingToWrite = true;
+    setState(() {
+      areYouGoingToWrite = true;
+    });
     reConnect().then((value){
       // write("Sj");
     });
@@ -539,10 +560,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     _stmController.isActive = true;
     art.addController(_stmController);
     _numberExampleInput = _stmController.findInput<double>('Number 1') as SMINumber;
-    updatingLevelIdx();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp){
       setState(() {
-        _numberExampleInput?.value = levelIdx.toDouble();
+        _numberExampleInput?.value = riveIdx;
       });
     });
   }
@@ -563,23 +583,35 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   TextStyle cmtStyle = const TextStyle(fontSize: 15, color: Colors.black,);
 
   void updatingLevelIdx(){
-    if(level < maxLevel/2){
-      setState(() {
-        levelIdx = 0;
-        _numberExampleInput?.value = levelIdx.toDouble();
-      });
-    }
-    else if(level == maxLevel/2){
-      setState(() {
-        levelIdx = 1;
-        _numberExampleInput?.value = levelIdx.toDouble();
-      });
-    }
-    else{
-      setState(() {
-        levelIdx = 2;
-        _numberExampleInput?.value = levelIdx.toDouble();
-      });
+    if(_isConnected){
+      if(level < maxLevel/2){
+        setState(() {
+          levelIdx = 0;
+          riveIdx = levelIdx.toDouble();
+          _numberExampleInput?.value = riveIdx;
+        });
+      }
+      else if(level == maxLevel/2){
+        setState(() {
+          levelIdx = 1;
+          riveIdx = levelIdx.toDouble();
+          _numberExampleInput?.value = riveIdx;
+        });
+      }
+      else if(level == -1){
+        setState(() {
+          levelIdx = 0;
+          riveIdx = -1;
+          _numberExampleInput?.value = riveIdx;
+        });
+      }
+      else{
+        setState(() {
+          levelIdx = 2;
+          riveIdx = levelIdx.toDouble();
+          _numberExampleInput?.value = riveIdx;
+        });
+      }
     }
   }
 
@@ -657,7 +689,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                     slivers: [
                       SliverToBoxAdapter(  // 단일 위젯은 요걸로
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 10, left: 15, right: 15,),
+                          padding: const EdgeInsets.only(left: 15, right: 15,),
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.44,
                             decoration: BoxDecoration(
@@ -676,9 +708,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                   padding: const EdgeInsets.only(left: 40, right: 40),
                                   child: Container(
                                     height: 80,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black,
-                                      borderRadius: BorderRadius.all(Radius.circular(70)),
+                                    decoration: BoxDecoration(
+                                      color: _isConnected? Colors.black:Colors.redAccent,
+                                      borderRadius: const BorderRadius.all(Radius.circular(70)),
                                     ),
 
                                     child: Row(
@@ -690,24 +722,26 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                         //   value: 0.9,
                                         //   iconOutline: Colors.white,
                                         // ),
-                                        const Icon(Icons.bolt_rounded, color: Colors.greenAccent, size: 30,),
+                                        _isConnected? const Icon(Icons.bolt_rounded, color: Colors.greenAccent, size: 30,) : const Icon(Icons.cancel, color: Colors.black, size: 30,),
                                         const SizedBox(width: 10,),
-                                        const Text("MediLight", style: TextStyle(fontSize: 20, color: Colors.white),),
-                                        const Spacer(flex: 2,),
-                                        SizedBox(
-                                          width: 53,
-                                          height: 53,
-                                          child: SimpleCircularProgressBar(
-                                            valueNotifier: batteryValue,
-                                            progressStrokeWidth: 3,
-                                            backStrokeWidth: 3,
-                                            mergeMode: true,
-                                            animationDuration: 0,
-                                            onGetText: (double value){
-                                              return Text("${value.toInt()}", style: const TextStyle(color: Colors.white, fontSize: 20,),);
-                                            },
-                                          ),
-                                        ),
+                                        _isConnected? const Text("MediLight", style: TextStyle(fontSize: 20, color: Colors.white),) :const Text("No Connection", style: TextStyle(fontSize: 20, color: Colors.white),),
+                                        _isConnected? const Spacer(flex: 2,) : const SizedBox(),
+                                        _isConnected?
+                                          SizedBox(
+                                            width: 53,
+                                            height: 53,
+                                            child: SimpleCircularProgressBar(
+                                              valueNotifier: batteryValue,
+                                              progressStrokeWidth: 3,
+                                              backStrokeWidth: 3,
+                                              mergeMode: true,
+                                              animationDuration: 0,
+                                              onGetText: (double value){
+                                                return Text("${value.toInt()}", style: const TextStyle(color: Colors.white, fontSize: 20,),);
+                                              },
+                                            ),
+                                          ):
+                                          const SizedBox(),
                                         const Spacer(flex: 1,),
                                       ],
                                     ),
@@ -720,7 +754,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                   height: 180,
                                   width: MediaQuery.of(context).size.height * 0.23,
                                   child: RiveAnimation.asset(
-                                    "assets/rive/lil_guy.riv",
+                                    "assets/rive/lil_guy_updated.riv",
                                     fit: BoxFit.fill,
                                     onInit: _riveOneInit,
                                     alignment: Alignment.center,
@@ -768,7 +802,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                     animation: false,
                                     animationDuration: 1000,
                                     lineHeight: 20.0,
-                                    percent: level/maxLevel,
+                                    percent: level >= 0? level/maxLevel : 0/maxLevel,
                                     center: Text("Lv. $level", style: const TextStyle(fontSize: 15,),),
                                     progressColor: const Color.fromRGBO(42, 77, 20, 1),
                                     backgroundColor: Colors.white,
@@ -794,14 +828,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                       const SliverToBoxAdapter(
                         child: SizedBox(
                           height: 15,
-                        ),
-                      ),
-
-                      levelIdx < 2?
-                      const SliverToBoxAdapter()
-                          : const SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 20,
                         ),
                       ),
 
@@ -864,7 +890,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                       ),
 
                       SliverToBoxAdapter(  // 단일 위젯은 요걸로
-                        child: Container(
+                        child: SizedBox(
                           height: 130.0,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
