@@ -4,6 +4,9 @@
 
 import 'dart:async';
 
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
+import 'package:ble_uart/screens/alarm_alert_screen.dart';
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/screens/onboarding_screen.dart';
@@ -12,6 +15,7 @@ import 'package:ble_uart/utils/ble_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/bluetooth_off_screen.dart';
@@ -19,6 +23,7 @@ import 'screens/scan_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  KakaoSdk.init(nativeAppKey: '5334e091dd18acc59eeaffac5c5f5959');
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true); // Log level 을 verbose 로 설정, syntax color on
   runApp(ChangeNotifierProvider(create: (context) => BLEInfo(), child: const FlutterBlueApp()));
 }
@@ -42,6 +47,9 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
   late StreamSubscription<BluetoothAdapterState> _adapterStateStateSubscription; // stream state subscription
   late SharedPreferences pref;
 
+  late List<AlarmSettings> alarms = [];
+  static StreamSubscription<AlarmSettings>? subscription;
+
   @override
   void initState() { // Identify whether the adapter is connected (listening)
     prefGetter();
@@ -52,6 +60,31 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
         setState(() {});
       }
     });
+    subscription ??= Alarm.ringStream.stream.listen((alarmSettings)
+      => navigateToRingScreen(alarmSettings),
+    );
+  }
+
+  void loadAlarms() {
+    setState(() {
+      print("[alarm_set_screen] load alarms start");
+      try{
+        alarms = Alarm.getAlarms();
+        alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+      }catch(e){
+        print("[alarm_set_screen] no saved alarms");
+      }
+    });
+  }
+
+  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              AlarmAlertScreen(alarmSettings: alarmSettings),
+        ));
+    loadAlarms();
   }
 
   @override
