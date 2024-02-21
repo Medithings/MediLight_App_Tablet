@@ -52,10 +52,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SliverAppBar(
             backgroundColor: Colors.transparent,
             title: Align(alignment: Alignment.centerLeft, child: Text("Settings", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,),)),
-            floating: true,
             centerTitle: true,
             // flexibleSpace: Placeholder(),
-            expandedHeight: 50,
           ),
           const SliverToBoxAdapter(
             child: SizedBox(height: 15,),

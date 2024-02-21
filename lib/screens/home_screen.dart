@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:ble_uart/screens/ai_screen.dart';
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/uart_screen.dart';
@@ -12,17 +14,20 @@ import 'package:cupertino_battery_indicator/cupertino_battery_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../main.dart';
 import '../utils/database.dart';
+import 'alarm_alert_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key,});
@@ -80,6 +85,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   List<Color> cardColors = [const Color.fromRGBO(200,225,204, 1), const Color.fromRGBO(255,215,105, 1), const Color.fromRGBO(253,216,216,1)];
   List<Color> infoColors = [const Color.fromRGBO(143,182,171, 1), const Color.fromRGBO(231,159,49, 1), const Color.fromRGBO(238,114,114,1)];
   List<Color> batteryColors = [const Color.fromRGBO(200,225,204, 1), const Color.fromRGBO(255,215,105, 1), const Color.fromRGBO(253,216,216,1)];
+
+  int totalC = 0;
+  late SharedPreferences pref;
 
   @override
   void initState() {
@@ -181,6 +189,27 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       }
 
     });
+
+    prefGetter();
+  }
+
+  void prefGetter() async {
+    pref = await SharedPreferences.getInstance();
+
+    try{
+      setState(() {
+        if(pref.getInt("totalC") != null){
+          totalC = pref.getInt("totalC")!;
+        }
+        else{
+          pref.setInt("totalC", 0);
+        }
+      });
+    }catch(e){
+      if (kDebugMode) {
+        print("error : $e");
+      }
+    }
   }
 
   void listeningToChar(){
@@ -440,7 +469,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             }
             tjmsg.add(msgString);
             if(tjmsg.length % 24 == 0 && tjmsg.isNotEmpty){
-              var timeStampForDB = DateFormat("yyyyMMddhhmm").format(DateTime.now());
+              var timeStampForDB = DateFormat("yyyyMMddHHmmssSSS").format(DateTime.now());
               ParsingMeasured(timeStampForDB, tjmsg);
               if(kDebugMode){
                 print("[HOMESCREEN] PARSING DONE");
@@ -747,11 +776,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 40,),
+                                const SizedBox(height: 20,),
                                 // Center(child: Lottie.asset('assets/walking.json', frameRate: FrameRate.max, width: 250, height: 230,)),
                                 SizedBox(
                                   // color: Colors.purpleAccent,
-                                  height: 180,
+                                  height: 200,
                                   width: MediaQuery.of(context).size.height * 0.23,
                                   child: RiveAnimation.asset(
                                     "assets/rive/lil_guy_updated.riv",
@@ -825,11 +854,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                           ),
                         ),
                       ),
-                      const SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 15,
-                        ),
-                      ),
 
                       SliverAppBar(
                         scrolledUnderElevation: 0.0,
@@ -838,7 +862,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         collapsedHeight: MediaQuery.of(context).size.height * 0.1,
                         backgroundColor: Colors.white,
                         flexibleSpace: FlexibleSpaceBar(
-                          titlePadding: const EdgeInsets.only(left: 30.0, top: 5.0, right: 0.0, bottom: 15.0),
+                          titlePadding: const EdgeInsets.only(left: 30.0, right: 0.0, bottom: 15.0),
                           title: RichText(
                             text: TextSpan(
                               text: "Current Level: $level",
@@ -866,9 +890,28 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         ),
                       ),
 
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 15, right: 15, top: 5,),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Text(
+                                "Remaining catheter: $totalC",
+                                style: const TextStyle(color: Colors.white, fontSize: 20,),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
                       SliverToBoxAdapter(  // 단일 위젯은 요걸로
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                          padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 20,),
                           child: SizedBox(
                             height: 70,
                             child: FilledButton(
@@ -883,7 +926,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                   measure();
                                 }
                               },
-                              child: const Text("측정", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                              child: const Text("Measure", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
                             ),
                           ),
                         ),

@@ -18,7 +18,6 @@ class RegisterScreen extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.9,
             child: ListView(
               children: const [
-                SizedBox(height: 40,),
                 Image(image: AssetImage('assets/logo300.png'), height: 200,),
                 RegisterFormField(),
                 SizedBox(height: 70,),

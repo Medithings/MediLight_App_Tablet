@@ -53,6 +53,8 @@ dependencies:
   path: ^1.8.3
   simple_circular_progress_bar: ^1.0.2
   rive: ^0.12.4
+  kakao_flutter_sdk: ^1.8.0
+  flutter_email_sender: ^6.0.2
 
 dev_dependencies:
   flutter_test:

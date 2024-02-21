@@ -50,7 +50,7 @@ class _AIScreenState extends State<AIScreen> {
 
   String todayString = "";
 
-  bool measuring = false;
+  bool measuringAgc = false;
 
   late SharedPreferences pref;
 
@@ -282,12 +282,17 @@ class _AIScreenState extends State<AIScreen> {
         // TODO: add in agc values
         agcMsg.add(msgString);
         if(agcMsg.length % 42 == 0 && agcMsg.isNotEmpty){
-          var timeStampForDB = DateFormat("yyyyMMddhhmm").format(DateTime.now());
+          var timeStampForDB = DateFormat("yyyyMMddHHmmssSSS").format(DateTime.now());
+          if(kDebugMode){
+            print("=================================================");
+            print("timeStamp: $timeStampForDB");
+            print("=================================================");
+          }
           ParsingAGC(timeStampForDB, agcMsg);
           if(kDebugMode){
             print("[AIScreen] PARSING DONE");
           }
-          write("status0");
+          write("status0").then((value) => measuringAgc = false);
         }
       }
     }
@@ -541,192 +546,209 @@ class _AIScreenState extends State<AIScreen> {
           automaticallyImplyLeading: false,
         ),
 
-        body: Center(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.9,
-            child: ListView(
-              // mainAxisAlignment: MainAxisAlignment.end,
-              // crossAxisAlignment: CrossAxisAlignment.center,
-              // mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.black12,
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 20, top: 20,),
-                    child: Text(
-                      "안내사항\n의료진의 안내에 따라주세요.",
-                      style: TextStyle(color: Colors.black54, fontSize: 17, ),
-                    ),
-                  ),
-                ),
-                // const Spacer(flex: 8,),
-                const Divider(thickness: 2.0, height: 75,),
-
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  height: 80,
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(126, 189, 194, 1),
-                    ),
-                    onPressed: (){
-                      write("status1");
-                      Future.delayed(const Duration(seconds: 1), (){
-                        write("agc");
-                      });
-                    },
-                    child: const Text("기기최적화", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                  ),
-                ),
-
-                const SizedBox(height: 30,),
-
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  height: 80,
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(126, 189, 194, 1),
-                    ),
-                    onPressed: _zeroConfirm,
-                    child: const Text("0ml   측정", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                  ),
-                ),
-                const SizedBox(height: 30,),
-                Row(
+        body: Stack(
+          children: [
+            Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: ListView(
+                  // mainAxisAlignment: MainAxisAlignment.end,
+                  // crossAxisAlignment: CrossAxisAlignment.center,
+                  // mainAxisSize: MainAxisSize.min,
                   children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.black12,
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 20, top: 20,),
+                        child: Text(
+                          "안내사항\n의료진의 안내에 따라주세요.",
+                          style: TextStyle(color: Colors.black54, fontSize: 17, ),
+                        ),
+                      ),
+                    ),
+                    // const Spacer(flex: 8,),
+                    const Divider(thickness: 2.0, height: 75,),
+
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      height: 80,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color.fromRGBO(126, 189, 194, 1),
+                        ),
+                        onPressed: (){
+                          measuringAgc = true;
+                          write("status1");
+                          Future.delayed(const Duration(seconds: 1), (){
+                            write("agc");
+                          });
+                        },
+                        child: const Text("기기최적화", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                      ),
+                    ),
+
+                    const SizedBox(height: 30,),
+
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      height: 80,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color.fromRGBO(126, 189, 194, 1),
+                        ),
+                        onPressed: _zeroConfirm,
+                        child: const Text("0ml   측정", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                      ),
+                    ),
+                    const SizedBox(height: 30,),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10,),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              controller: txtController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: '측정 용량을 적어주세요',
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.2,
+                          height: 52,
+                          child: FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color.fromRGBO(35, 31, 32, 1),
+                            ),
+                            onPressed: _confirm,
+                            child: const Text("확인", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10,),
+
+                    const Divider(thickness: 2.0, height: 80,),
+
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10, bottom: 20,),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Row(
+                          children: [
+                            Icon(Icons.book),
+                            SizedBox(width: 10,),
+                            Text("학습 로그", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25,),),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    measureLog.isNotEmpty ?
                     Padding(
                       padding: const EdgeInsets.only(left: 10,),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          controller: txtController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: '측정 용량을 적어주세요',
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.black12,
+                        ),
+                        height: 200,
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 25, top: 25),
+                            child: ListView.builder(
+                                controller: _scrollController,
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: measureLog.length,
+                                reverse: true,
+                                itemBuilder: (context, index){
+                                  return Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        measureLog[index],
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 15,),
+                                    ],
+                                  );
+                                }
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.2,
-                      height: 52,
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color.fromRGBO(35, 31, 32, 1),
+                    ): Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: 70,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.black12,
                         ),
-                        onPressed: _confirm,
-                        child: const Text("확인", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 20, top: 20,),
+                          child: Text("아직 측정된 데이터가 없습니다", style: TextStyle(fontSize: 17, color: Colors.black54,),),
+                        ),
                       ),
                     ),
+                    // const Spacer(flex: 1,),
+
+                    measureLog.length >= 2 ?
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30, bottom: 20,),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: 70,
+                        child: FilledButton(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.blueGrey,
+                          ),
+                          onPressed: trainConfirm,
+                          child: const Text("학습 시작", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                        ),
+                      ),
+                    ): Container(),
+
+                    const SizedBox(height: 50,),
                   ],
                 ),
-
-                const SizedBox(height: 10,),
-
-                const Divider(thickness: 2.0, height: 80,),
-
-                const Padding(
-                  padding: EdgeInsets.only(left: 10, bottom: 20,),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Row(
-                      children: [
-                        Icon(Icons.book),
-                        SizedBox(width: 10,),
-                        Text("학습 로그", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25,),),
-                      ],
-                    ),
-                  ),
-                ),
-
-                measureLog.isNotEmpty ?
-                Padding(
-                  padding: const EdgeInsets.only(left: 10,),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.black12,
-                    ),
-                    height: 200,
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 25, top: 25),
-                        child: ListView.builder(
-                            controller: _scrollController,
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: measureLog.length,
-                            reverse: true,
-                            itemBuilder: (context, index){
-                              return Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    measureLog[index],
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 15,),
-                                ],
-                              );
-                            }
-                        ),
-                      ),
-                    ),
-                  ),
-                ): Center(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.black12,
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 20, top: 20,),
-                      child: Text("아직 측정된 데이터가 없습니다", style: TextStyle(fontSize: 17, color: Colors.black54,),),
-                    ),
-                  ),
-                ),
-                // const Spacer(flex: 1,),
-
-                measureLog.length >= 2 ?
-                Padding(
-                  padding: const EdgeInsets.only(top: 30, bottom: 20,),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: 70,
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.blueGrey,
-                      ),
-                      onPressed: trainConfirm,
-                      child: const Text("학습 시작", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                    ),
-                  ),
-                ): Container(),
-
-                const SizedBox(height: 50,),
-              ],
+              ),
             ),
-          ),
+            Offstage(
+              offstage: !measuringAgc,
+              child: const Stack(
+                children: [
+                  Opacity(
+                    opacity: 0.5,
+                    child: ModalBarrier(dismissible: false, color: Colors.black,),
+                  ),
+                  Center(child: CircularProgressIndicator(),),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

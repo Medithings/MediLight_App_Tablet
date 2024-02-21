@@ -42,9 +42,11 @@ class _AlarmSetScreenState extends State<AlarmSetScreen> {
 
     print("[alarm_set_screen] load alarm done");
 
-    subscription ??= Alarm.ringStream.stream.listen(
-          (alarmSettings) => navigateToRingScreen(alarmSettings),
-    );
+    if(!Alarm.ringStream.hasListener){
+      subscription ??= Alarm.ringStream.stream.listen(
+            (alarmSettings) => navigateToRingScreen(alarmSettings),
+      );
+    }
     print("[alarm_set_screen] subscription done");
   }
 
