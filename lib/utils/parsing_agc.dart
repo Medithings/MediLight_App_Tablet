@@ -1,4 +1,4 @@
-import 'package:ble_uart/ledmodels/agc_values.dart';
+import 'package:ble_uart/models/agc_values.dart';
 import 'package:ble_uart/utils/database.dart';
 
 void ParsingAGC(String getTimeStamp, List<String> gain) async{

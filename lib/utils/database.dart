@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:ble_uart/ledmodels/agc_values.dart';
-import 'package:ble_uart/ledmodels/measured_values.dart';
+import 'package:ble_uart/models/agc_values.dart';
+import 'package:ble_uart/models/measured_time.dart';
+import 'package:ble_uart/models/measured_values.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
@@ -155,6 +156,19 @@ class DatabaseModel{
 
 
   }
+
+  Future<List<MeasuredTime>> timeStampGroupBy() async {
+    var db = await database;
+
+    // testTable 테이블에 있는 모든 field 값을 maps에 저장한다.
+    final List<Map<String, dynamic>> maps = await db.rawQuery("SELECT timeStamp FROM measured_values GROUP BY timeStamp ORDER BY timeStamp DESC");
+
+    return List.generate(maps.length, (index) {
+      return MeasuredTime(
+        timeStamp: maps[index]['timeStamp'] as String,
+      );
+    });
+  }
 }
 
 class LED_PD {
@@ -172,3 +186,4 @@ class LED_PD {
   final List<String> eleven = ['pd19', 'pd12', 'pd9', 'pd2'];
   final List<String> twelve = ['pd20', 'pd11', 'pd10', 'pd1'];
 }
+
