@@ -33,7 +33,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <!--    https://stackoverflow.com/questions/73972021/android-permission-schedule-exact-alarm-required-with-use-exact-alarm-for-alarm -->
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
@@ -42,6 +41,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
 
     <application
         android:label="MediLight"

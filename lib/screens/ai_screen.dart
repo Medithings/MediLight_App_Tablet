@@ -282,7 +282,7 @@ class _AIScreenState extends State<AIScreen> {
         // TODO: add in agc values
         agcMsg.add(msgString);
         if(agcMsg.length % 42 == 0 && agcMsg.isNotEmpty){
-          var timeStampForDB = DateFormat("yyyyMMddHHmmssSSS").format(DateTime.now());
+          var timeStampForDB = DateFormat("yyyy/MM/dd/HH/mm/ss/SSS").format(DateTime.now());
           if(kDebugMode){
             print("=================================================");
             print("timeStamp: $timeStampForDB");

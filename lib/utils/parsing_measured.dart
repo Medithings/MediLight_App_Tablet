@@ -1,4 +1,4 @@
-import 'package:ble_uart/ledmodels/measured_values.dart';
+import 'package:ble_uart/models/measured_values.dart';
 import 'package:ble_uart/utils/database.dart';
 
 void ParsingMeasured(String getTimeStamp, List<String> gain) async{
