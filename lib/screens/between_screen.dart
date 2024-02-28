@@ -84,7 +84,7 @@ class _BetweenScreenState extends State<BetweenScreen> {
     super.dispose();
   }
 
-  Future onScan() async { // Scan button pressed
+  Future onScan() async {
     await getRemoteId();
 
     try {
