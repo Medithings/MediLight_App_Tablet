@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:isolate';
 
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/utils/ble_info.dart';
 import 'package:ble_uart/utils/extra.dart';
 import 'package:ble_uart/utils/parsing_measured.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,166 @@ import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import '../utils/database.dart';
 
 final pageBucket = PageStorageBucket();
+
+late SharedPreferences pref;
+String remoteIdSaved="";
+final List<ScanResult> _scanResults = [];
+
+void _initForegroundTask(){
+  if(!Platform.isAndroid){
+    return;
+  }
+
+  FlutterForegroundTask.init(
+    androidNotificationOptions: AndroidNotificationOptions(
+      channelId: 'foreground_service',
+      channelName: 'Foreground Notification',
+      channelDescription: 'This notification appears when the foreground service is running',
+      channelImportance: NotificationChannelImportance.LOW,
+      priority: NotificationPriority.LOW,
+      iconData: const NotificationIconData(
+        resType: ResourceType.mipmap,
+        resPrefix: ResourcePrefix.ic,
+        name: 'launcher',
+      ),
+    ),
+    iosNotificationOptions: const IOSNotificationOptions(
+      showNotification: false,
+      playSound: false,
+    ),
+    foregroundTaskOptions: const ForegroundTaskOptions(
+      interval: 5000,
+      isOnceEvent: false,
+      autoRunOnBoot: false,
+      allowWakeLock: true,
+      allowWifiLock: false,
+    ),
+  );
+}
+
+startForegroundTask() async{
+  if(!Platform.isAndroid){
+    return;
+  }
+
+  if(await FlutterForegroundTask.isRunningService){
+    return FlutterForegroundTask.restartService();
+  } else {
+    return FlutterForegroundTask.startService(
+      notificationTitle: 'MediLight App is running for connection',
+      notificationText: 'Tap to return to the app',
+      callback: startCallback,
+    );
+  }
+}
+
+stopForegroundTask(){
+  if(!Platform.isAndroid){
+    return;
+  }
+
+  return FlutterForegroundTask.stopService();
+}
+
+@pragma('vm:entry-point')
+void startCallback(){
+  FlutterForegroundTask.setTaskHandler(FirstTaskHandler());
+}
+
+Future onScan() async {
+  await getRemoteId();
+
+  try {
+  } catch (e) {
+    if(kDebugMode){
+      print("[BetweenScreen] something went wrong while onScan-systemDevices is done\nError: $e");
+    }
+  }
+
+  try {
+    // android is slow when asking for all advertisements,
+    // so instead we only ask for 1/8 of them
+    int divisor = Platform.isAndroid ? 8 : 1;
+    _scanResults.clear();
+    await FlutterBluePlus.startScan(continuousUpdates: true, continuousDivisor: divisor);
+  } catch (e) {
+    return;
+  }
+
+}
+
+Future getRemoteId() async {
+  pref = await SharedPreferences.getInstance();
+
+  try{
+    remoteIdSaved = pref.getString("remoteId")!;
+  }catch(e){
+    return ;
+  }
+}
+
+Future onStop() async {
+  try {
+    FlutterBluePlus.stopScan();
+  } catch (e) {
+    if (kDebugMode) {
+      print("[BetweenScreen] something went wrong while onStop-stopScan is done\nError: $e");
+    }
+  }
+}
+
+void onConnect(BluetoothDevice device) async{
+  try{
+    await device.connectAndUpdateStream();
+    if (kDebugMode) {
+      print("[BetweenScreen] on connecting - device: ${device.platformName}");
+    }
+
+  }catch(e){
+    if (kDebugMode) {
+      print("[BetweenScreen] something went wrong while onConnect-connectAndUpdateStream is done\nError: $e");
+    }
+  }
+}
+
+class FirstTaskHandler extends TaskHandler{
+  late StreamSubscription<List<ScanResult>> _scanResultsSubscription;
+
+  @override
+  Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
+
+    print("STARTSTARTSTARTSTARTSTARTSTARTSTARTSTART");
+
+    _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
+      _scanResults.clear();
+
+      for (var element in results) {
+        if(element.device.remoteId.str == remoteIdSaved){
+
+          if(_scanResults.indexWhere((x) => x.device.remoteId == element.device.remoteId) < 0){
+            onStop();
+            _scanResults.add(element);
+            onConnect(element.device);
+          }
+        }
+      }
+    });
+  }
+
+  @override
+  Future<void> onDestroy(DateTime timestamp, SendPort? sendPort) async {}
+
+  @override
+  void onRepeatEvent(DateTime timestamp, SendPort? sendPort) {}
+
+  @override
+  void onNotificationButtonPressed(String id) {}
+
+  @override
+  void onNotificationPressed(){
+    FlutterForegroundTask.launchApp("/betweenScreen");
+  }
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key,});
@@ -88,7 +249,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if(kDebugMode){
       print("[HomeScreen] !!Init state start!!");
@@ -115,6 +275,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     riveIdx = -1;
 
     mTimeStamp();
+
+    _initForegroundTask();
+    startForegroundTask();
 
     timer = Stream.periodic(const Duration(minutes: 1), (x){
       if(mounted){
@@ -537,6 +700,40 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         print("$count : $element");
       }
       print("heard or listening");
+    }
+  }
+
+  Future<void> _requestPermissionForAndroid() async {
+    if (!Platform.isAndroid) {
+      return;
+    }
+
+    // "android.permission.SYSTEM_ALERT_WINDOW" permission must be granted for
+    // onNotificationPressed function to be called.
+    //
+    // When the notification is pressed while permission is denied,
+    // the onNotificationPressed function is not called and the app opens.
+    //
+    // If you do not use the onNotificationPressed or launchApp function,
+    // you do not need to write this code.
+    if (!await FlutterForegroundTask.canDrawOverlays) {
+      // This function requires `android.permission.SYSTEM_ALERT_WINDOW` permission.
+      await FlutterForegroundTask.openSystemAlertWindowSettings();
+    }
+
+    // Android 12 or higher, there are restrictions on starting a foreground service.
+    //
+    // To restart the service on device reboot or unexpected problem, you need to allow below permission.
+    if (!await FlutterForegroundTask.isIgnoringBatteryOptimizations) {
+      // This function requires `android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` permission.
+      await FlutterForegroundTask.requestIgnoreBatteryOptimization();
+    }
+
+    // Android 13 and higher, you need to allow notification permission to expose foreground service notification.
+    final NotificationPermission notificationPermissionStatus =
+    await FlutterForegroundTask.checkNotificationPermission();
+    if (notificationPermissionStatus != NotificationPermission.granted) {
+      await FlutterForegroundTask.requestNotificationPermission();
     }
   }
 
