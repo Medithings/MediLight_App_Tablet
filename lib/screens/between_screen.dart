@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:ble_uart/screens/bottom_navigation_screen.dart';
 import 'package:ble_uart/screens/home_screen.dart';
+import 'package:ble_uart/utils/back_ground_service.dart';
 import 'package:ble_uart/utils/extra.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ class _BetweenScreenState extends State<BetweenScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    BlueBackground.stopFlutterBackgroundService();
     onScan();
 
     _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) { // Scan result 를 listen
@@ -55,6 +57,7 @@ class _BetweenScreenState extends State<BetweenScreen> {
           }
           if(_scanResults.indexWhere((x) => x.device.remoteId == element.device.remoteId) < 0){
             onStop();
+            pref.setString("patchName", element.device.platformName);
             _scanResults.add(element);
             patch.add(element.device);
             storingDevice(element.device);

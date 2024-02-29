@@ -130,6 +130,8 @@ class _AlarmSetScreenState extends State<AlarmSetScreen> {
   @override
   Widget build(BuildContext context) {
     print("start building");
+    loadAlarms();
+
     return Scaffold(
       appBar: AppBar(title: const Text('Alarms')),
       body: SafeArea(

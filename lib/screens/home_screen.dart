@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:ble_uart/screens/between_screen.dart';
+import 'package:ble_uart/utils/back_ground_service.dart';
 import 'package:ble_uart/utils/ble_info.dart';
 import 'package:ble_uart/utils/extra.dart';
 import 'package:ble_uart/utils/parsing_measured.dart';
@@ -21,166 +21,6 @@ import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import '../utils/database.dart';
 
 final pageBucket = PageStorageBucket();
-
-late SharedPreferences pref;
-String remoteIdSaved="";
-final List<ScanResult> _scanResults = [];
-
-void _initForegroundTask(){
-  if(!Platform.isAndroid){
-    return;
-  }
-
-  FlutterForegroundTask.init(
-    androidNotificationOptions: AndroidNotificationOptions(
-      channelId: 'foreground_service',
-      channelName: 'Foreground Notification',
-      channelDescription: 'This notification appears when the foreground service is running',
-      channelImportance: NotificationChannelImportance.LOW,
-      priority: NotificationPriority.LOW,
-      iconData: const NotificationIconData(
-        resType: ResourceType.mipmap,
-        resPrefix: ResourcePrefix.ic,
-        name: 'launcher',
-      ),
-    ),
-    iosNotificationOptions: const IOSNotificationOptions(
-      showNotification: false,
-      playSound: false,
-    ),
-    foregroundTaskOptions: const ForegroundTaskOptions(
-      interval: 5000,
-      isOnceEvent: false,
-      autoRunOnBoot: false,
-      allowWakeLock: true,
-      allowWifiLock: false,
-    ),
-  );
-}
-
-startForegroundTask() async{
-  if(!Platform.isAndroid){
-    return;
-  }
-
-  if(await FlutterForegroundTask.isRunningService){
-    return FlutterForegroundTask.restartService();
-  } else {
-    return FlutterForegroundTask.startService(
-      notificationTitle: 'MediLight App is running for connection',
-      notificationText: 'Tap to return to the app',
-      callback: startCallback,
-    );
-  }
-}
-
-stopForegroundTask(){
-  if(!Platform.isAndroid){
-    return;
-  }
-
-  return FlutterForegroundTask.stopService();
-}
-
-@pragma('vm:entry-point')
-void startCallback(){
-  FlutterForegroundTask.setTaskHandler(FirstTaskHandler());
-}
-
-Future onScan() async {
-  await getRemoteId();
-
-  try {
-  } catch (e) {
-    if(kDebugMode){
-      print("[BetweenScreen] something went wrong while onScan-systemDevices is done\nError: $e");
-    }
-  }
-
-  try {
-    // android is slow when asking for all advertisements,
-    // so instead we only ask for 1/8 of them
-    int divisor = Platform.isAndroid ? 8 : 1;
-    _scanResults.clear();
-    await FlutterBluePlus.startScan(continuousUpdates: true, continuousDivisor: divisor);
-  } catch (e) {
-    return;
-  }
-
-}
-
-Future getRemoteId() async {
-  pref = await SharedPreferences.getInstance();
-
-  try{
-    remoteIdSaved = pref.getString("remoteId")!;
-  }catch(e){
-    return ;
-  }
-}
-
-Future onStop() async {
-  try {
-    FlutterBluePlus.stopScan();
-  } catch (e) {
-    if (kDebugMode) {
-      print("[BetweenScreen] something went wrong while onStop-stopScan is done\nError: $e");
-    }
-  }
-}
-
-void onConnect(BluetoothDevice device) async{
-  try{
-    await device.connectAndUpdateStream();
-    if (kDebugMode) {
-      print("[BetweenScreen] on connecting - device: ${device.platformName}");
-    }
-
-  }catch(e){
-    if (kDebugMode) {
-      print("[BetweenScreen] something went wrong while onConnect-connectAndUpdateStream is done\nError: $e");
-    }
-  }
-}
-
-class FirstTaskHandler extends TaskHandler{
-  late StreamSubscription<List<ScanResult>> _scanResultsSubscription;
-
-  @override
-  Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
-
-    print("STARTSTARTSTARTSTARTSTARTSTARTSTARTSTART");
-
-    _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
-      _scanResults.clear();
-
-      for (var element in results) {
-        if(element.device.remoteId.str == remoteIdSaved){
-
-          if(_scanResults.indexWhere((x) => x.device.remoteId == element.device.remoteId) < 0){
-            onStop();
-            _scanResults.add(element);
-            onConnect(element.device);
-          }
-        }
-      }
-    });
-  }
-
-  @override
-  Future<void> onDestroy(DateTime timestamp, SendPort? sendPort) async {}
-
-  @override
-  void onRepeatEvent(DateTime timestamp, SendPort? sendPort) {}
-
-  @override
-  void onNotificationButtonPressed(String id) {}
-
-  @override
-  void onNotificationPressed(){
-    FlutterForegroundTask.launchApp("/betweenScreen");
-  }
-}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key,});
@@ -275,9 +115,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     riveIdx = -1;
 
     mTimeStamp();
-
-    _initForegroundTask();
-    startForegroundTask();
 
     timer = Stream.periodic(const Duration(minutes: 1), (x){
       if(mounted){
@@ -973,6 +810,10 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    BlueBackground.startFlutterBackgroundService(() async{
+      BlueBackground.connectToDevice();
+    });
+
     super.build(context);
     return Scaffold(
       backgroundColor: Colors.white,

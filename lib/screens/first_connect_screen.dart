@@ -58,6 +58,7 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
         if(element.device.platformName.contains("Bladder") || element.device.platformName.contains("MEDi")){
           if(_scanResults.indexWhere((x) => x.device.remoteId == element.device.remoteId) < 0){
             _scanResults.add(element);
+            pref.setString("patchName", element.device.platformName);
           }
         }
       }
