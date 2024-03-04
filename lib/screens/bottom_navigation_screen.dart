@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:alarm/alarm.dart';
 import 'package:alarm/service/storage.dart';
@@ -10,11 +11,15 @@ import 'package:ble_uart/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'alarm_alert_screen.dart';
 
 
 GlobalKey bottomNavGKey = GlobalKey(debugLabel: 'bottomNavGKey');
+late String userName;
+late String? guardian;
 
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({super.key});
@@ -41,9 +46,43 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
     print("[alarm_set_screen] load alarm done");
 
-    subscription ??= Alarm.ringStream.stream.listen(
-          (alarmSettings) => navigateToRingScreen(alarmSettings),
+    subscription ??= Alarm.ringStream.stream.listen((alarmSettings){
+      getPref();
+      if(guardian != "") sendEmail();
+      navigateToRingScreen(alarmSettings);
+    });
+  }
+
+  Future<void> sendEmail() async {
+
+    if(guardian == "") guardian = "medilightalert@gmail.com";
+
+    final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'origin': 'http://localhost',
+      },
+      body: json.encode({
+        'service_id': 'service_6my5fyc',
+        'template_id': 'template_h9e6z72',
+        'user_id': 'rOz5-_7UcT4waeklB',
+        'accessToken': 'Rd0oFcUkMKZVYqGqmSsAR',
+        'template_params': {
+          'user_name': userName,
+          'send_to': guardian,
+        },
+      }),
     );
+
+    print(response.body);
+  }
+
+  Future<void> getPref() async{
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    userName = pref.getString("name") ?? "No name";
+    guardian = pref.getString("guardianEmail");
   }
 
   Future<void> checkAndroidNotificationPermission() async {
