@@ -1,5 +1,4 @@
 import 'package:ble_uart/widgets/register_form_field.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatelessWidget {

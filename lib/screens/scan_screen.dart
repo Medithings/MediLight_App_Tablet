@@ -14,7 +14,7 @@ import '../widgets/scan_result_tile.dart';
 import '../utils/extra.dart';
 
 class ScanScreen extends StatefulWidget {
-  ScanScreen({Key? key,}) : super(key: key);
+  const ScanScreen({Key? key,}) : super(key: key);
 
   @override
   State<ScanScreen> createState() => _ScanScreenState();
@@ -40,7 +40,7 @@ class ScanScreen extends StatefulWidget {
 
 class _ScanScreenState extends State<ScanScreen> {
   List<BluetoothDevice> _systemDevices = []; // FBP에서 제공하는 것 (BluetoothDevice)
-  List<ScanResult> _scanResults = []; // FBP에서 제공하는 것 (ScanResult)
+  final List<ScanResult> _scanResults = []; // FBP에서 제공하는 것 (ScanResult)
   bool _isScanning = false; // 초기값 false
   late StreamSubscription<List<ScanResult>> _scanResultsSubscription; // Stream으로 받아오는 scan result list
   late StreamSubscription<bool> _isScanningSubscription; // Stream으로 bool 값을 가지는 state

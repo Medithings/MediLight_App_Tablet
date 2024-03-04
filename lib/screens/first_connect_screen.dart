@@ -2,11 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:ble_uart/screens/ai_screen.dart';
-import 'package:ble_uart/screens/bottom_navigation_screen.dart';
-import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/utils/ble_info.dart';
 import 'package:ble_uart/utils/extra.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';

@@ -3,27 +3,19 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
-import 'dart:isolate';
 
 import 'package:alarm/alarm.dart';
-import 'package:alarm/model/alarm_settings.dart';
 import 'package:ble_uart/screens/alarm_alert_screen.dart';
 import 'package:ble_uart/screens/between_screen.dart';
-import 'package:ble_uart/screens/bottom_navigation_screen.dart';
-import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/screens/onboarding_screen.dart';
-import 'package:ble_uart/screens/uart_screen.dart';
 import 'package:ble_uart/utils/ble_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/bluetooth_off_screen.dart';
-import 'screens/scan_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -64,9 +56,14 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
         setState(() {});
       }
     });
-    subscription ??= Alarm.ringStream.stream.listen((alarmSettings)
-      => navigateToRingScreen(alarmSettings),
-    );
+
+    // AlarmStorage.init();
+    // loadAlarms();
+    //
+    // subscription ??= Alarm.ringStream.stream.listen((alarmSettings)
+    //   => navigateToRingScreen(alarmSettings),
+    // );
+
   }
 
   void loadAlarms() {

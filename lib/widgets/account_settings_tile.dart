@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettingsTile extends StatelessWidget {
   AccountSettingsTile({super.key, required this.stIcon, required this.title, required this.bgColor, required this.info});

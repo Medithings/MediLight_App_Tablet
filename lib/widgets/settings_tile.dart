@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsTile extends StatelessWidget {
   SettingsTile({super.key, required this.stIcon, required this.title, required this.goto, required this.bgColor});

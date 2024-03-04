@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +22,7 @@ class _AccountScreenState extends State<AccountScreen> {
   late String weight="";
   late String height="";
   late String gender="";
-  Gender? _g = Gender.male;
+  final Gender _g = Gender.male;
 
   final txtController = TextEditingController();
 

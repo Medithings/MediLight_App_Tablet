@@ -1,5 +1,4 @@
 import 'package:ble_uart/screens/register_screen.dart';
-import 'package:ble_uart/screens/scan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
