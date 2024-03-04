@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AccountSettingsTile extends StatelessWidget {
-  AccountSettingsTile({super.key, required this.stIcon, required this.title, required this.bgColor, required this.info});
+  const AccountSettingsTile({super.key, required this.stIcon, required this.title, required this.bgColor, required this.info});
 
-  IconData stIcon;
-  String title;
-  Color bgColor;
-  String info;
+  final IconData stIcon;
+  final String title;
+  final Color bgColor;
+  final String info;
 
   @override
   Widget build(BuildContext context) {
-    final navigator = Navigator.of(context);
-
     return SizedBox(
       height: 50,
       child: Column(

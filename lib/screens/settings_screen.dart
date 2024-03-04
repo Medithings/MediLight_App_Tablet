@@ -1,9 +1,11 @@
 import 'package:ble_uart/screens/alarm_set_screen.dart';
+import 'package:ble_uart/screens/patch_info_screen.dart';
 import 'package:ble_uart/screens/uart_screen.dart';
 import 'package:ble_uart/widgets/settings_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'account_screen.dart';
@@ -123,7 +125,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         top: BorderSide(color: Color.fromRGBO(225, 225, 225, 1),),
                       )
                     ),
-                    child: SettingsTile(stIcon: Icons.notifications_rounded, title: "Alarm", goto: const AlarmSetScreen(), bgColor: Colors.redAccent,),
+                    child: const SettingsTile(stIcon: Icons.notifications_rounded, title: "Alarm", goto: AlarmSetScreen(), bgColor: Colors.redAccent,),
                   ),
                   const Padding(
                     padding: EdgeInsets.only(left: 56.0),
@@ -135,7 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         bottom: BorderSide(color: Color.fromRGBO(225, 225, 225, 1),),
                       )
                     ),
-                    child: SettingsTile(stIcon: Icons.rocket_launch_rounded, title: "UART MODE", goto: const UARTScreen(), bgColor: Colors.grey,),
+                    child: const SettingsTile(stIcon: Icons.rocket_launch_rounded, title: "UART MODE", goto: UARTScreen(), bgColor: Colors.grey,),
                   ),
                 ],
               ),
@@ -153,7 +155,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   bottom: BorderSide(color: Color.fromRGBO(225, 225, 225, 1),),
                 ),
               ),
-              child: SettingsTile(stIcon: Icons.info, title: "Patch info", goto: const UARTScreen(), bgColor: Colors.blueAccent,),
+              child: const SettingsTile(stIcon: Icons.info, title: "Patch info", goto: PatchInfoScreen(), bgColor: Colors.blueAccent,),
             ),
           ),
         ],

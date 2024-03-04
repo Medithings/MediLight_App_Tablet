@@ -147,7 +147,6 @@ class _UARTScreenState extends State<UARTScreen> {
 
   Future onWritePressed(String text) async {
     try {
-      // TODO : _textCnt.text cmd 확인 절차
       _textCnt.text += "\r";
       await characteristic[idx_rx].write(utf8.encode(text), withoutResponse: characteristic[idx_rx].properties.writeWithoutResponse);
       // Snackbar.show(ABC.c, "Write: Success", success: true);

@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SettingsTile extends StatelessWidget {
-  SettingsTile({super.key, required this.stIcon, required this.title, required this.goto, required this.bgColor});
+  const SettingsTile({super.key, required this.stIcon, required this.title, required this.goto, required this.bgColor});
 
-  IconData stIcon;
-  String title;
-  Widget goto;
-  Color bgColor;
+  final IconData stIcon;
+  final String title;
+  final Widget goto;
+  final Color bgColor;
 
   @override
   Widget build(BuildContext context) {
