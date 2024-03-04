@@ -1,17 +1,11 @@
-import 'package:ble_uart/screens/ai_screen.dart';
 import 'package:ble_uart/screens/first_connect_screen.dart';
-import 'package:ble_uart/screens/guardian_register_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
-import '../screens/scan_screen.dart';
 
 class RegisterFormField extends StatefulWidget {
   const RegisterFormField({super.key});
@@ -39,7 +33,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
   Color btnbackgroundColor = Colors.grey.shade300;
   Color btnTextColor = Colors.black26;
 
-  bool _sendUpdates = false;
+  final bool _sendUpdates = false;
 
   bool btnVisible = false;
 

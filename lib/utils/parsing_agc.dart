@@ -2,8 +2,8 @@ import 'package:ble_uart/models/agc_values.dart';
 import 'package:ble_uart/utils/database.dart';
 
 void ParsingAGC(String getTimeStamp, List<String> gain) async{
-  final _model = DatabaseModel();
-  var db = _model.database;
+  final model = DatabaseModel();
+  var db = model.database;
 
   List<String> splitted;
   String? ledNum;
@@ -62,7 +62,7 @@ void ParsingAGC(String getTimeStamp, List<String> gain) async{
     led24 = int.parse(splitted[24].trim());
     led25 = int.parse(splitted[25].trim());
 
-    await _model.insertingAGC(AgcValues(
+    await model.insertingAGC(AgcValues(
       timeStamp: getTimeStamp,
       lednum: ledNum,
       led1: led1,

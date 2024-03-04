@@ -1,14 +1,20 @@
-import 'dart:ffi';
 
+import 'dart:async';
+
+import 'package:alarm/alarm.dart';
+import 'package:alarm/service/storage.dart';
 import 'package:ble_uart/screens/alarm_set_screen.dart';
 import 'package:ble_uart/screens/catheter_count_screen.dart';
 import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/screens/settings_screen.dart';
-import 'package:ble_uart/utils/ble_info.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+
+import 'alarm_alert_screen.dart';
+
+
+GlobalKey bottomNavGKey = GlobalKey(debugLabel: 'bottomNavGKey');
 
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({super.key});
@@ -19,6 +25,59 @@ class BottomNavigationScreen extends StatefulWidget {
 
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _currentIndex = 0;
+  late List<AlarmSettings> alarms = [];
+  static StreamSubscription<AlarmSettings>? subscription;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (Alarm.android) {
+      checkAndroidNotificationPermission();
+    }
+
+    AlarmStorage.init();
+    loadAlarms();
+
+    print("[alarm_set_screen] load alarm done");
+
+    subscription ??= Alarm.ringStream.stream.listen(
+          (alarmSettings) => navigateToRingScreen(alarmSettings),
+    );
+  }
+
+  Future<void> checkAndroidNotificationPermission() async {
+    final status = await Permission.notification.status;
+    if (status.isDenied) {
+      alarmPrint('Requesting notification permission...');
+      final res = await Permission.notification.request();
+      alarmPrint(
+        'Notification permission ${res.isGranted ? '' : 'not'} granted.',
+      );
+    }
+  }
+
+  void loadAlarms() {
+    setState(() {
+      print("[alarm_set_screen] load alarms start");
+      try{
+        alarms = Alarm.getAlarms();
+        alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+      }catch(e){
+        print("[alarm_set_screen] no saved alarms");
+      }
+    });
+  }
+
+  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              AlarmAlertScreen(alarmSettings: alarmSettings),
+        ));
+    loadAlarms();
+  }
 
   final List<Widget> _widgetOptions = <Widget>[
     const HomeScreen(),
@@ -34,6 +93,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
         child: _widgetOptions.elementAt(_currentIndex),
       ),
       bottomNavigationBar: SalomonBottomBar(
+        key: bottomNavGKey,
         backgroundColor: Colors.white,
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),

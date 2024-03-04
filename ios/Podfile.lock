@@ -2,11 +2,17 @@ PODS:
   - alarm (0.0.1):
     - Flutter
   - Flutter (1.0.0)
+  - flutter_background_service_ios (0.0.3):
+    - Flutter
   - flutter_blue_plus (0.0.1):
     - Flutter
   - flutter_email_sender (0.0.1):
     - Flutter
   - flutter_fgbg (0.0.1):
+    - Flutter
+  - flutter_foreground_task (0.0.1):
+    - Flutter
+  - flutter_local_notifications (0.0.1):
     - Flutter
   - kakao_flutter_sdk_common (1.8.0):
     - Flutter
@@ -26,9 +32,12 @@ PODS:
 DEPENDENCIES:
   - alarm (from `.symlinks/plugins/alarm/ios`)
   - Flutter (from `Flutter`)
+  - flutter_background_service_ios (from `.symlinks/plugins/flutter_background_service_ios/ios`)
   - flutter_blue_plus (from `.symlinks/plugins/flutter_blue_plus/ios`)
   - flutter_email_sender (from `.symlinks/plugins/flutter_email_sender/ios`)
   - flutter_fgbg (from `.symlinks/plugins/flutter_fgbg/ios`)
+  - flutter_foreground_task (from `.symlinks/plugins/flutter_foreground_task/ios`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - kakao_flutter_sdk_common (from `.symlinks/plugins/kakao_flutter_sdk_common/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - rive_common (from `.symlinks/plugins/rive_common/ios`)
@@ -41,12 +50,18 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/alarm/ios"
   Flutter:
     :path: Flutter
+  flutter_background_service_ios:
+    :path: ".symlinks/plugins/flutter_background_service_ios/ios"
   flutter_blue_plus:
     :path: ".symlinks/plugins/flutter_blue_plus/ios"
   flutter_email_sender:
     :path: ".symlinks/plugins/flutter_email_sender/ios"
   flutter_fgbg:
     :path: ".symlinks/plugins/flutter_fgbg/ios"
+  flutter_foreground_task:
+    :path: ".symlinks/plugins/flutter_foreground_task/ios"
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
   kakao_flutter_sdk_common:
     :path: ".symlinks/plugins/kakao_flutter_sdk_common/ios"
   permission_handler_apple:
@@ -63,9 +78,12 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   alarm: 6c1f6a9688f94cd6bf8f104c67cc26e78c9d8d13
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_background_service_ios: e30e0d3ee69e4cee66272d0c78eacd48c2e94aac
   flutter_blue_plus: 4837da7d00cf5d441fdd6635b3a57f936778ea96
   flutter_email_sender: 02d7443217d8c41483223627972bfdc09f74276b
   flutter_fgbg: 31c0d1140a131daea2d342121808f6aa0dcd879d
+  flutter_foreground_task: 21ef182ab0a29a3005cc72cd70e5f45cb7f7f817
+  flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
   kakao_flutter_sdk_common: f1f155e0e8a195ec73e0f69acc0b0af510a0e926
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   rive_common: 3a4c254c6e4db7e4b9e05daeb3d1f47ae4f7bf76

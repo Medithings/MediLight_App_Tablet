@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:ble_uart/screens/bottom_navigation_screen.dart';
-import 'package:ble_uart/screens/home_screen.dart';
 import 'package:ble_uart/utils/back_ground_service.dart';
 import 'package:ble_uart/utils/extra.dart';
 import 'package:flutter/foundation.dart';
