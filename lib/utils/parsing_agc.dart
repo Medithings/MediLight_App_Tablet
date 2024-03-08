@@ -3,7 +3,7 @@ import 'package:ble_uart/utils/database.dart';
 
 void ParsingAGC(String getTimeStamp, List<String> gain) async{
   final model = DatabaseModel();
-  var db = model.database;
+  model.database;
 
   List<String> splitted;
   String? ledNum;

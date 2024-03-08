@@ -14,6 +14,7 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/back_ground_service.dart';
 import 'alarm_alert_screen.dart';
 
 
@@ -48,7 +49,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
     subscription ??= Alarm.ringStream.stream.listen((alarmSettings){
       getPref();
-      sendEmail();
       navigateToRingScreen(alarmSettings);
     });
   }
@@ -127,6 +127,10 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Background.startFlutterBackgroundService(() async{
+      Background.connectToDevice();
+      Background.alarmSendEmail();
+    });
     return Scaffold(
       body: SafeArea(
         child: _widgetOptions.elementAt(_currentIndex),
