@@ -22,7 +22,6 @@ class AlarmSetScreen extends StatefulWidget {
 
 class _AlarmSetScreenState extends State<AlarmSetScreen> {
   late List<AlarmSettings> alarms = [];
-
   static StreamSubscription<AlarmSettings>? subscription;
 
   @override

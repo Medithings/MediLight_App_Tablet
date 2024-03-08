@@ -48,7 +48,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
     subscription ??= Alarm.ringStream.stream.listen((alarmSettings){
       getPref();
-      if(guardian != "") sendEmail();
+      sendEmail();
       navigateToRingScreen(alarmSettings);
     });
   }
@@ -65,10 +65,10 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
         'origin': 'http://localhost',
       },
       body: json.encode({
-        'service_id': 'service_6my5fyc',
+        'service_id': 'service_3gzs5mj',
         'template_id': 'template_h9e6z72',
-        'user_id': 'rOz5-_7UcT4waeklB',
-        'accessToken': 'Rd0oFcUkMKZVYqGqmSsAR',
+        'user_id': 'DpL6M9GiRBZFBI1bh',
+        'accessToken': '1-6LZXIKob51cgNkHjbmt',
         'template_params': {
           'user_name': userName,
           'send_to': guardian,
