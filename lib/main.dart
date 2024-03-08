@@ -9,8 +9,11 @@ import 'package:ble_uart/screens/alarm_alert_screen.dart';
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/onboarding_screen.dart';
 import 'package:ble_uart/utils/ble_info.dart';
+import 'package:ble_uart/utils/catheter_shared_prefs.dart';
+import 'package:ble_uart/utils/database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:provider/provider.dart';
@@ -18,10 +21,24 @@ import 'package:provider/provider.dart';
 import 'screens/bluetooth_off_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+Future<void> main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  await Alarm.init(showDebugLogs: true);
+  await CatheterSharedPrefs().init();
+  final db = DatabaseModel();
+  await db.database;
+
   KakaoSdk.init(nativeAppKey: '5334e091dd18acc59eeaffac5c5f5959'); // kako native appp
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true); // Log level 을 verbose 로 설정, syntax color on
-  runApp(ChangeNotifierProvider(create: (context) => BLEInfo(), child: const FlutterBlueApp()));
+
+  runApp(
+      ChangeNotifierProvider(
+          create: (context) => BLEInfo(),
+        child: const FlutterBlueApp(),
+      ),
+  );
 }
 
 //

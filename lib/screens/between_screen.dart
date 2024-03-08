@@ -40,7 +40,7 @@ class _BetweenScreenState extends State<BetweenScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    BlueBackground.stopFlutterBackgroundService();
+    Background.stopFlutterBackgroundService();
     onScan();
 
     _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) { // Scan result 를 listen

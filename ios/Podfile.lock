@@ -1,6 +1,8 @@
 PODS:
   - alarm (0.0.1):
     - Flutter
+  - device_info_plus (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_background_service_ios (0.0.3):
     - Flutter
@@ -31,6 +33,7 @@ PODS:
 
 DEPENDENCIES:
   - alarm (from `.symlinks/plugins/alarm/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - flutter_background_service_ios (from `.symlinks/plugins/flutter_background_service_ios/ios`)
   - flutter_blue_plus (from `.symlinks/plugins/flutter_blue_plus/ios`)
@@ -48,6 +51,8 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   alarm:
     :path: ".symlinks/plugins/alarm/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   flutter_background_service_ios:
@@ -77,6 +82,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   alarm: 6c1f6a9688f94cd6bf8f104c67cc26e78c9d8d13
+  device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_background_service_ios: e30e0d3ee69e4cee66272d0c78eacd48c2e94aac
   flutter_blue_plus: 4837da7d00cf5d441fdd6635b3a57f936778ea96

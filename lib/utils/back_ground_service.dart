@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -9,6 +13,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 late SharedPreferences pref;
 String remoteIdSaved="";
@@ -306,6 +311,19 @@ void onStart(ServiceInstance service) async {
       }
     }
 
+    print("FLUTTER BACKGROUND SERVICE: ${DateTime.now()}");
+
+    final deviceInfo = DeviceInfoPlugin();
+    String? device;
+    if(Platform.isAndroid){
+      final androidInfo = await deviceInfo.androidInfo;
+      device = androidInfo.model;
+    }
+    if(Platform.isIOS){
+      final iosInfo = await deviceInfo.iosInfo;
+      device = iosInfo.model;
+    }
+
     /// you can see this log in logcat
     //debugPrint('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
     service.invoke(
@@ -318,7 +336,7 @@ void onStart(ServiceInstance service) async {
   });
 }
 
-class BlueBackground {
+class Background {
 
   static const MethodChannel _channel = MethodChannel('ios_back_plugin');
 
@@ -327,8 +345,7 @@ class BlueBackground {
     var isRunning = await service.isRunning();
     if (isRunning) {
       service.invoke("stopService");
-    } else {
-    }
+    } else {}
   }
 
   // This Function will start or initialize background service in ios and android
@@ -356,6 +373,37 @@ class BlueBackground {
     }else{
       await _channel.invokeMethod('executeInBackground');
     }
+  }
+
+  static Future<void> alarmSendEmail() async{
+    StreamSubscription<AlarmSettings>? subscription;
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String userName = pref.getString("name") ?? "No name";
+    String guardian = pref.getString("guardianEmail") ?? "";
+
+    subscription ??= Alarm.ringStream.stream.listen((alarmSettings) async {
+      if(guardian == "") guardian = "medilightalert@gmail.com";
+
+      final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'origin': 'http://localhost',
+        },
+        body: json.encode({
+          'service_id': 'service_3gzs5mj',
+          'template_id': 'template_h9e6z72',
+          'user_id': 'DpL6M9GiRBZFBI1bh',
+          'accessToken': '1-6LZXIKob51cgNkHjbmt',
+          'template_params': {
+            'user_name': userName,
+            'send_to': guardian,
+          },
+        }),
+      );
+      print(response.body);
+    });
   }
 
   // This method will write data on specific characteristic
