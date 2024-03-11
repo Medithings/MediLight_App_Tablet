@@ -27,7 +27,9 @@ Future<void> main() async{
 
   await Alarm.init(showDebugLogs: true);
   await CatheterSharedPrefs().init();
+  print("db = DatabaseModel");
   final db = DatabaseModel();
+  print("db get database");
   await db.database;
 
   KakaoSdk.init(nativeAppKey: '5334e091dd18acc59eeaffac5c5f5959'); // kako native appp
