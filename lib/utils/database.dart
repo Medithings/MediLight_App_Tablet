@@ -11,11 +11,17 @@ class DatabaseModel{
   Database? _database;
 
   Future<Database> get database async{
-    if(_database != null) return _database!;
+    if(_database != null) {
+      print("[DB] has database");
+      return _database!;
+    }
+
+    print("[DB] openning DB");
     return await initDB();
   }
 
   initDB() async{
+    print("[DB] init DB");
     String path = p.join(await getDatabasesPath(), 'mediLight.db');
 
     if(kDebugMode){
@@ -27,13 +33,16 @@ class DatabaseModel{
       version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
+      readOnly: false,
     );
   }
 
   FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) {}
 
   FutureOr<void> _onCreate(Database db, int version){
-    String sqlAgctable = '''
+    print("[DB] onCreate DB");
+
+    db.execute('''
     CREATE TABLE agc_values(
       timeStamp TEXT,
       LEDNUM TEXT,
@@ -64,11 +73,10 @@ class DatabaseModel{
       led25 REAL,
       PRIMARY KEY(timeStamp, LEDNUM)
       );
-    ''';
+    ''');
     // TODO: indexing LEDNUM
-    db.execute(sqlAgctable);
 
-    String sqlMeasuredtable=''' 
+    db.execute(''' 
     CREATE TABLE measured_values(
       timeStamp TEXT,
       LEDNUM TEXT,
@@ -86,11 +94,11 @@ class DatabaseModel{
       twelve REAL,
       PRIMARY KEY(timeStamp, LEDNUM)
       );
-    ''';
+    ''');
     // TODO: indexing LEDNUM
-    db.execute(sqlMeasuredtable);
 
-    String sqlLedPd = '''
+
+    db.execute('''
     CREATE TABLE led_pd(
       LEDNUM TEXT,
       one INTEGER,
@@ -107,10 +115,29 @@ class DatabaseModel{
       twelve INTEGER,
       PRIMARY KEY(LEDNUM)
       );
-    ''';
-    db.execute(sqlLedPd);
+    ''');
+
     LED_PD ledPdInfo = LED_PD();
-    insertingLedPd(ledPdInfo);
+
+    for(int i=0; i<4; i++) {
+      db.insert(
+          'led_pd',
+          {'LEDNUM': ledPdInfo.lednum[i],
+            'one': ledPdInfo.one[i],
+            'two': ledPdInfo.two[i],
+            'three': ledPdInfo.three[i],
+            'four': ledPdInfo.four[i],
+            'five': ledPdInfo.five[i],
+            'six': ledPdInfo.six[i],
+            'seven': ledPdInfo.seven[i],
+            'eight': ledPdInfo.eight[i],
+            'nine': ledPdInfo.nine[i],
+            'ten': ledPdInfo.ten[i],
+            'eleven': ledPdInfo.eleven[i],
+            'twelve': ledPdInfo.twelve[i],
+          }
+      );
+    }
   }
 
   Future<void> insertingMeasured(MeasuredValues item) async{
@@ -129,32 +156,6 @@ class DatabaseModel{
         'agc_values',
         item.toMap()
     );
-  }
-
-  Future<void> insertingLedPd(LED_PD item) async{
-    var db = await database;
-
-    for(int i=0; i<4; i++){
-      await db.insert(
-          'LED_PD',
-          {'LEDNUM' : item.lednum[i],
-            'one' : item.one[i],
-            'two' : item.two[i],
-            'three' : item.three[i],
-            'four' : item.four[i],
-            'five' : item.five[i],
-            'six' : item.six[i],
-            'seven' : item.seven[i],
-            'eight' : item.eight[i],
-            'nine' : item.nine[i],
-            'ten' : item.ten[i],
-            'eleven' : item.eleven[i],
-            'twelve' : item.twelve[i],
-          }
-      );
-    }
-
-
   }
 
   Future<List<MeasuredTime>> timeStampGroupBy() async {
