@@ -1,17 +1,18 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CatheterSharedPrefs{
+class SharedPrefsUtil{
   late final SharedPreferences? _sharedPrefs;
 
-  static final CatheterSharedPrefs _instance = CatheterSharedPrefs._internal();
+  static final SharedPrefsUtil _instance = SharedPrefsUtil._internal();
 
-  factory CatheterSharedPrefs() => _instance;
-  CatheterSharedPrefs._internal();
+  factory SharedPrefsUtil() => _instance;
+  SharedPrefsUtil._internal();
 
   Future<void> init() async{
     _sharedPrefs = await SharedPreferences.getInstance();
   }
 
+  // catheter
   bool get hasCatheter => _sharedPrefs?.containsKey("catheter") ?? false;
   bool get catheter => _sharedPrefs?.getBool("catheter") ?? false;
   int get totalC => _sharedPrefs?.getInt("totalC") ?? 0;
@@ -21,6 +22,11 @@ class CatheterSharedPrefs{
   String get endDate => _sharedPrefs?.getString("endDate") ?? "";
   String get savedDate => _sharedPrefs?.getString("savedDate") ?? "";
 
+  // home
+  String get patchName => _sharedPrefs?.getString("patchName") ?? "";
+  String get remoteId => _sharedPrefs?.getString("remoteId") ?? "";
+
+  // catheter
   set catheter(bool x) => _sharedPrefs?.setBool("catheter", x);
   set totalC(int x) => _sharedPrefs?.setInt("totalC", x);
   set initialC(int x) => _sharedPrefs?.setInt("initialC", x);
@@ -28,6 +34,10 @@ class CatheterSharedPrefs{
   set initPer(int x) => _sharedPrefs?.setInt("initPer", x);
   set endDate(String x) => _sharedPrefs?.setString("endDate", x);
   set savedDate(String x) => _sharedPrefs?.setString("savedDate", x);
+
+  // home
+  set patchName(String x) => _sharedPrefs?.setString("patchName", x);
+  set remoteId(String x) => _sharedPrefs?.setString("remoteId", x);
 
   void removeCatheterSP(){
     print("remove catheter");
