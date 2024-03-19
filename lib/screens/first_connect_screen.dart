@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:ble_uart/screens/ai_screen.dart';
-import 'package:ble_uart/utils/ble_info.dart';
+import 'package:ble_uart/utils/ble_info_provider.dart';
 import 'package:ble_uart/utils/extra.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -167,11 +167,11 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
   }
 
   void storingService(BluetoothService s){
-    context.read<BLEInfo>().service = s;
+    context.read<BLEInfoProvider>().service = s;
   }
 
   void storingDevice(BluetoothDevice d){
-    context.read<BLEInfo>().device = d;
+    context.read<BLEInfoProvider>().device = d;
   }
 
   void goAI(){

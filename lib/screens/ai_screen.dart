@@ -13,7 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../utils/ble_info.dart';
+import '../utils/ble_info_provider.dart';
 
 class AIScreen extends StatefulWidget {
   const AIScreen({super.key});
@@ -66,8 +66,8 @@ class _AIScreenState extends State<AIScreen> {
 
       todayString = DateFormat.yMMMd().format(DateTime.now());
 
-      device = context.read<BLEInfo>().device;
-      service = context.read<BLEInfo>().service;
+      device = context.read<BLEInfoProvider>().device;
+      service = context.read<BLEInfoProvider>().service;
       characteristic = service.characteristics;
 
       // device.connectAndUpdateStream();
@@ -139,7 +139,7 @@ class _AIScreenState extends State<AIScreen> {
   }
 
   void listeningToChar(){
-    service = context.read<BLEInfo>().service;
+    service = context.read<BLEInfoProvider>().service;
 
     if(kDebugMode){
       print("[AIScreen] listeningToChar(): service uid is ${service.uuid.toString().toUpperCase()}");

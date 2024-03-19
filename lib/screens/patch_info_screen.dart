@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:provider/provider.dart';
 
-import '../utils/ble_info.dart';
+import '../utils/ble_info_provider.dart';
 import 'bottom_navigation_screen.dart';
 
 final  navigationBar = bottomNavGKey.currentWidget;
@@ -40,9 +40,9 @@ class _PatchInfoScreenState extends State<PatchInfoScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    device = context.read<BLEInfo>().device;
-    service = context.read<BLEInfo>().service;
-    characteristic = context.read<BLEInfo>().service.characteristics;
+    device = context.read<BLEInfoProvider>().device;
+    service = context.read<BLEInfoProvider>().service;
+    characteristic = context.read<BLEInfoProvider>().service.characteristics;
 
     switch (characteristic.first.uuid.toString().toUpperCase()){
       case rx: idx_tx = 1; idx_rx = 0;
