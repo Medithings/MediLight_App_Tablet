@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -15,7 +16,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
-late SharedPreferences pref;
+import '../screens/alarm_alert_screen.dart';
+
+late SharedPreferences _pref;
 String remoteIdSaved="";
 final List<ScanResult> _scanResults = [];
 
@@ -274,17 +277,45 @@ void onStart(ServiceInstance service) async {
           }
         }
       }
-    },
-    );
+    },);
     await FlutterBluePlus.startScan();
   }
 
-  if (connectToDevice.isNotEmpty) {
+  if (connectToDevice.isNotEmpty && Platform.isAndroid) {
     scanningMethod();
   }
 
+  StreamSubscription<AlarmSettings>? alarmSubscription;
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  String userName = _pref.getString("name") ?? "No name";
+  String guardian = _pref.getString("guardianEmail") ?? "";
+
+  alarmSubscription ??= Alarm.ringStream.stream.listen((alarmSettings) async {
+    if(guardian == "") guardian = "isaac.lim@medithings.co.kr";
+
+    final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'origin': 'http://localhost',
+      },
+      body: json.encode({
+        'service_id': 'service_3gzs5mj',
+        'template_id': 'template_h9e6z72',
+        'user_id': 'DpL6M9GiRBZFBI1bh',
+        'accessToken': '1-6LZXIKob51cgNkHjbmt',
+        'template_params': {
+          'user_name': userName,
+          'send_to': guardian,
+        },
+      }),
+    );
+    print(response.body);
+  });
+
   // bring to foreground
-  Timer.periodic(const Duration(seconds: 2), (timer) async {
+  Timer.periodic(const Duration(seconds: 30), (timer) async {
     if (service is AndroidServiceInstance) {
       if (await service.isForegroundService()) {
         /// OPTIONAL for use custom notification
@@ -297,7 +328,7 @@ void onStart(ServiceInstance service) async {
             android: AndroidNotificationDetails(
               'my_foreground',
               'MY FOREGROUND SERVICE',
-              icon: 'launcher_notification',
+              icon: 'ic_bg_service_small',
               ongoing: true,
             ),
           ),
@@ -310,6 +341,9 @@ void onStart(ServiceInstance service) async {
         );
       }
     }
+
+    // This is the part for background service
+    // TODO: if no listener then
 
     print("FLUTTER BACKGROUND SERVICE: ${DateTime.now()}");
 
@@ -325,7 +359,6 @@ void onStart(ServiceInstance service) async {
     }
 
     /// you can see this log in logcat
-    //debugPrint('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
     service.invoke(
       'update',
       {
@@ -359,7 +392,6 @@ class Background {
       }
     }else{
       try {
-        await _channel.invokeMethod('executeInBackground');
         backgroundFunction!();
       } catch (e) {
         // print("Error executing in the background: $e");
@@ -376,35 +408,14 @@ class Background {
   }
 
   static Future<void> alarmSendEmail() async{
-    StreamSubscription<AlarmSettings>? subscription;
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    String userName = pref.getString("name") ?? "No name";
-    String guardian = pref.getString("guardianEmail") ?? "";
-
-    subscription ??= Alarm.ringStream.stream.listen((alarmSettings) async {
-      if(guardian == "") guardian = "medilightalert@gmail.com";
-
-      final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'origin': 'http://localhost',
-        },
-        body: json.encode({
-          'service_id': 'service_3gzs5mj',
-          'template_id': 'template_h9e6z72',
-          'user_id': 'DpL6M9GiRBZFBI1bh',
-          'accessToken': '1-6LZXIKob51cgNkHjbmt',
-          'template_params': {
-            'user_name': userName,
-            'send_to': guardian,
-          },
-        }),
-      );
-      print(response.body);
-    });
+    if(Platform.isAndroid){
+      await initializeService();
+    }else{
+      print("Go");
+      await _channel.invokeMethod('letsGo');
+    }
   }
+
 
   // This method will write data on specific characteristic
   static Future<void> connectToDevice() async {
@@ -426,10 +437,10 @@ class Background {
       await preferences.setStringList('connectToDevice', log);
       await initializeService();
     }else{
-      await _channel.invokeMethod('connectToDevice', {
-        'deviceName': deviceName,
-        'serviceUuid': serviceUuid,
-      });
+      // await _channel.invokeMethod('connectToDevice', {
+      //   'deviceName': deviceName,
+      //   'serviceUuid': serviceUuid,
+      // });
     }
   }
 
