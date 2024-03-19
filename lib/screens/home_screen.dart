@@ -4,20 +4,21 @@ import 'dart:io';
 
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/utils/back_ground_service.dart';
-import 'package:ble_uart/utils/ble_info.dart';
+import 'package:ble_uart/utils/ble_info_provider.dart';
 import 'package:ble_uart/utils/extra.dart';
 import 'package:ble_uart/utils/parsing_measured.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
+import '../utils/shared_prefs_utils.dart';
 import '../utils/database.dart';
 
 final pageBucket = PageStorageBucket();
@@ -79,13 +80,15 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   List<Color> infoColors = [const Color.fromRGBO(143,182,171, 1), const Color.fromRGBO(231,159,49, 1), const Color.fromRGBO(238,114,114,1)];
   List<Color> batteryColors = [const Color.fromRGBO(200,225,204, 1), const Color.fromRGBO(255,215,105, 1), const Color.fromRGBO(253,216,216,1)];
 
-  int totalC = 0;
-  late SharedPreferences pref;
+  int dayPer = 0;
 
   List<String> measuredTime = [];
   DateTime current = DateTime.now();
   late Stream timer;
 
+  final spu = SharedPrefsUtil();
+
+  late bool didPassBetween;
 
   @override
   void initState() {
@@ -97,9 +100,15 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
     todayString = DateFormat.yMMMd().format(DateTime.now());
 
-    device = context.read<BLEInfo>().device;
-    service = context.read<BLEInfo>().service;
-    characteristic = service.characteristics;
+    didPassBetween = context.read<BLEInfoProvider>().didPassBetween;
+
+    print("didPassBetween : $didPassBetween");
+
+    if(!didPassBetween){
+      device = context.read<BLEInfoProvider>().device;
+      service = context.read<BLEInfoProvider>().service;
+      characteristic = service.characteristics;
+    }
 
     msg.clear();
     tjmsg.clear();
@@ -116,29 +125,27 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
     mTimeStamp();
 
-    timer = Stream.periodic(const Duration(minutes: 1), (x){
-      if(mounted){
-        setState(() {
-          current = current.add(const Duration(minutes: 1),);
-        });
+    if(!didPassBetween){
+      if(_connectionState == BluetoothConnectionState.disconnected){
+        if(kDebugMode){
+          print("[HomeScreen] The device is disconnected");
+        }
+        device.connectAndUpdateStream();
       }
-      return current;
-    });
-
-    timer.listen((event) async{
-      if(kDebugMode){
-        print("current time: $event");
-      }
-    });
-
-    if(_connectionState == BluetoothConnectionState.disconnected){
-      if(kDebugMode){
-        print("[HomeScreen] The device is disconnected");
-      }
-      device.connectAndUpdateStream();
+      listeningToConnection();
     }
+
     // msg.add("START!");
 
+    setState(() {
+      dayPer = spu.per;
+    });
+
+    print("[HomeScreen] Done");
+  }
+
+  void listeningToConnection(){
+    print("===== listeningToConnection() ======");
     _connectionStateSubscription = device.connectionState.listen((state) async {
       _connectionState = state;
 
@@ -155,11 +162,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       }
 
       if(kDebugMode){
-        print("[HomeScreen] initState() state: $state");
+        print("[HomeScreen] listeningToConnection state: $state");
       }
 
-      if(state == BluetoothConnectionState.disconnected){
-        if(mounted){
+      if(state == BluetoothConnectionState.disconnected) {
+        if (mounted) {
           setState(() {
             patchState = 0;
             battery = 0.0;
@@ -172,36 +179,16 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         updatingLevelIdx();
         device.connectAndUpdateStream();
         _lastValueSubscription.pause();
+
         if(kDebugMode){
           print("[HomeScreen] patchState = $patchState");
           print("[HomeScreen] _lastValueSubscription paused?: ${_lastValueSubscription.isPaused == true}");
         }
       }
       if(state == BluetoothConnectionState.connected){
-        if(kDebugMode){
-          print("-------[HomeScreen] _connectionState listeningToChar()-------");
-        }
         listeningToChar();
-        if(kDebugMode){
-          print("-------[HomeScreen] _connectionState listeningToChar() done-------");
-        }
-        if(kDebugMode){
-          print("-------[HomeScreen] _connectionState _lastValueSubscription.resume-------");
-        }
         _lastValueSubscription.resume();
-        if(kDebugMode){
-          print("-------[HomeScreen] _connectionState _lastValueSubscription.resume done-------");
-        }
-        if(kDebugMode){
-          print("-------[HomeScreen] _connectionState reConnect()-------");
-        }
         reConnect();
-        if(kDebugMode){
-          print("-------[HomeScreen] _connectionState reConnect() done-------");
-        }
-        if(kDebugMode){
-          print("[HomeScreen] _lastValueSubscription paused?: ${_lastValueSubscription.isPaused == true}");
-        }
         setState(() {
           if(mounted){
             level = 3;
@@ -209,34 +196,12 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         });
         updatingLevelIdx();
       }
-
     });
-
-    prefGetter();
-  }
-
-  void prefGetter() async {
-    pref = await SharedPreferences.getInstance();
-
-    try{
-
-      setState(() {
-        if(pref.getInt("totalC") != null){
-          totalC = pref.getInt("totalC")!;
-        }
-        else{
-          pref.setInt("totalC", 0);
-        }
-      });
-    }catch(e){
-      if (kDebugMode) {
-        print("error : $e");
-      }
-    }
   }
 
   void listeningToChar(){
-    service = context.read<BLEInfo>().service;
+    print("listeningToChar");
+    service = context.read<BLEInfoProvider>().service;
 
     if(kDebugMode){
       print("[HomeScreen] listeningToChar(): service uid is ${service.uuid.toString().toUpperCase()}");
@@ -540,40 +505,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     }
   }
 
-  Future<void> _requestPermissionForAndroid() async {
-    if (!Platform.isAndroid) {
-      return;
-    }
-
-    // "android.permission.SYSTEM_ALERT_WINDOW" permission must be granted for
-    // onNotificationPressed function to be called.
-    //
-    // When the notification is pressed while permission is denied,
-    // the onNotificationPressed function is not called and the app opens.
-    //
-    // If you do not use the onNotificationPressed or launchApp function,
-    // you do not need to write this code.
-    if (!await FlutterForegroundTask.canDrawOverlays) {
-      // This function requires `android.permission.SYSTEM_ALERT_WINDOW` permission.
-      await FlutterForegroundTask.openSystemAlertWindowSettings();
-    }
-
-    // Android 12 or higher, there are restrictions on starting a foreground service.
-    //
-    // To restart the service on device reboot or unexpected problem, you need to allow below permission.
-    if (!await FlutterForegroundTask.isIgnoringBatteryOptimizations) {
-      // This function requires `android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` permission.
-      await FlutterForegroundTask.requestIgnoreBatteryOptimization();
-    }
-
-    // Android 13 and higher, you need to allow notification permission to expose foreground service notification.
-    final NotificationPermission notificationPermissionStatus =
-    await FlutterForegroundTask.checkNotificationPermission();
-    if (notificationPermissionStatus != NotificationPermission.granted) {
-      await FlutterForegroundTask.requestNotificationPermission();
-    }
-  }
-
   Future write(String text) async {
     try {
       msg.add("[HomeScreen] write(): $text");
@@ -800,6 +731,10 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     return resultStr;
   }
 
+  void goToBetweenScreen(){
+    Navigator.pushReplacement(context, route);
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -811,7 +746,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
+    return !didPassBetween?
+    Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
@@ -1069,7 +1005,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Text(
-                                  "Remaining catheter: $totalC",
+                                  "Remaining catheter: $dayPer",
                                   style: const TextStyle(color: Colors.white, fontSize: 20,),
                                 ),
                               ),
@@ -1228,6 +1164,30 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             ),
           ],
         ),
+      ),
+    )
+    :
+    Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // TODO: 화질 구림
+          Image.asset(
+            "assets/lottie/skipBetween.gif",
+            height: 300,
+            width: 300,
+          ),
+          const SizedBox(height: 20,),
+          const Text("No connected patch found", style: TextStyle(fontSize: 18),),
+          const SizedBox(height: 40,),
+          FilledButton(
+            onPressed: (){
+              goToBetweenScreen();
+            },
+            child: const Text("Reconnect", style: TextStyle(fontSize: 16,),),
+          ),
+        ],
       ),
     );
   }
