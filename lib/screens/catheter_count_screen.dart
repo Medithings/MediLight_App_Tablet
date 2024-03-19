@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:intl/intl.dart';
-import '../utils/catheter_shared_prefs.dart';
+import '../utils/shared_prefs_utils.dart';
 
 class CatheterCountScreen extends StatefulWidget {
   const CatheterCountScreen({super.key});
@@ -25,7 +25,7 @@ class _CatheterCountScreenState extends State<CatheterCountScreen> {
   bool receivedSpeedButtonToday = true;
   bool endSpeedButton1Month = true;
 
-  final pref = CatheterSharedPrefs();
+  final pref = SharedPrefsUtil();
   late bool testingPref;
 
   late bool yesNo = true;

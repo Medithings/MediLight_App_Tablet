@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
+import 'package:alarm/service/storage.dart';
 import 'package:ble_uart/screens/bottom_navigation_screen.dart';
 import 'package:ble_uart/utils/back_ground_service.dart';
 import 'package:ble_uart/utils/extra.dart';
@@ -8,10 +11,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:lottie/lottie.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../utils/ble_info.dart';
+import '../utils/ble_info_provider.dart';
+import 'alarm_alert_screen.dart';
 
 class BetweenScreen extends StatefulWidget {
   const BetweenScreen({super.key});
@@ -37,10 +42,20 @@ class _BetweenScreenState extends State<BetweenScreen> {
   late SharedPreferences pref;
   String remoteIdSaved="";
 
+  late List<AlarmSettings> alarms = [];
+  static StreamSubscription<AlarmSettings>? subscription;
+
   @override
   void initState() {
     // TODO: implement initState
     Background.stopFlutterBackgroundService();
+
+    if(Platform.isAndroid){
+      AlarmStorage.init();
+      loadAlarms();
+      subscription ??= Alarm.ringStream.stream.listen((alarmSettings) => navigateToRingScreen(alarmSettings), );
+    }
+
     onScan();
 
     _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) { // Scan result 를 listen
@@ -61,6 +76,8 @@ class _BetweenScreenState extends State<BetweenScreen> {
             patch.add(element.device);
             storingDevice(element.device);
             onConnect(patch.first);
+            // TODO: 여기
+            pref.setBool("connected", true);
           }
         }
       }
@@ -77,6 +94,28 @@ class _BetweenScreenState extends State<BetweenScreen> {
       }
     });
     super.initState();
+  }
+
+  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              AlarmAlertScreen(alarmSettings: alarmSettings),
+        ));
+    loadAlarms();
+  }
+
+  void loadAlarms() {
+    setState(() {
+      print("[alarm_set_screen] load alarms start");
+      try{
+        alarms = Alarm.getAlarms();
+        alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+      }catch(e){
+        print("[alarm_set_screen] no saved alarms");
+      }
+    });
   }
 
   @override
@@ -145,15 +184,16 @@ class _BetweenScreenState extends State<BetweenScreen> {
     }
 
     // TODO: if registered is true goHome
+    context.read<BLEInfoProvider>().didPassBetween = false;
     goHome();
   }
 
   void storingService(BluetoothService s){
-    context.read<BLEInfo>().service = s;
+    context.read<BLEInfoProvider>().service = s;
   }
 
   void storingDevice(BluetoothDevice d){
-    context.read<BLEInfo>().device = d;
+    context.read<BLEInfoProvider>().device = d;
   }
 
   void goHome(){
@@ -213,6 +253,16 @@ class _BetweenScreenState extends State<BetweenScreen> {
             const SizedBox(height: 20,),
             const Text("Wait for a moment"),
             Text("checking : $checking"),
+            const Spacer(flex: 1,),
+            FilledButton(
+              onPressed: (){
+                context.read<BLEInfoProvider>().didPassBetween = true;
+                print("[BetweenScreen] it passed without connection: ${context.read<BLEInfoProvider>().didPassBetween}");
+                onStop();
+                goHome();
+              },
+              child: const Text("Skip connection", style: TextStyle(fontSize: 16,),),
+            ),
             const Spacer(flex: 3,),
           ],
         ),

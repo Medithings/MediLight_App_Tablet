@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:ble_uart/utils/ble_info.dart';
+import 'package:ble_uart/utils/ble_info_provider.dart';
 import 'package:ble_uart/widgets/message_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -76,9 +76,9 @@ class _UARTScreenState extends State<UARTScreen> {
   void initState() {
     super.initState();
 
-    device = context.read<BLEInfo>().device;
-    service = context.read<BLEInfo>().service;
-    characteristic = context.read<BLEInfo>().service.characteristics;
+    device = context.read<BLEInfoProvider>().device;
+    service = context.read<BLEInfoProvider>().service;
+    characteristic = context.read<BLEInfoProvider>().service.characteristics;
     // 중간에 connection 이 해제 되었을 때 snackbar => pop
     // _connectionStateSubscription = widget.device.connectionState.listen((state) async {
     //   if(state != BluetoothConnectionState.connected){

@@ -20,7 +20,6 @@ import 'alarm_alert_screen.dart';
 
 GlobalKey bottomNavGKey = GlobalKey(debugLabel: 'bottomNavGKey');
 late String userName;
-late String? guardian;
 
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({super.key});
@@ -42,18 +41,23 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       checkAndroidNotificationPermission();
     }
 
-    AlarmStorage.init();
     loadAlarms();
 
     print("[alarm_set_screen] load alarm done");
 
     subscription ??= Alarm.ringStream.stream.listen((alarmSettings){
-      getPref();
+      print("GG");
+      // sendEmail();
       navigateToRingScreen(alarmSettings);
     });
   }
 
   Future<void> sendEmail() async {
+    String? guardian;
+
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    userName = pref.getString("name") ?? "No name";
+    guardian = pref.getString("guardianEmail");
 
     if(guardian == "") guardian = "medilightalert@gmail.com";
 
@@ -77,12 +81,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     );
 
     print(response.body);
-  }
-
-  Future<void> getPref() async{
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    userName = pref.getString("name") ?? "No name";
-    guardian = pref.getString("guardianEmail");
   }
 
   Future<void> checkAndroidNotificationPermission() async {
