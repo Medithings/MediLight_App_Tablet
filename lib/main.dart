@@ -5,17 +5,20 @@
 import 'dart:async';
 
 import 'package:alarm/alarm.dart';
+import 'package:alarm/service/storage.dart';
 import 'package:ble_uart/screens/alarm_alert_screen.dart';
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/onboarding_screen.dart';
-import 'package:ble_uart/utils/ble_info.dart';
-import 'package:ble_uart/utils/catheter_shared_prefs.dart';
+import 'package:ble_uart/utils/back_ground_service.dart';
+import 'package:ble_uart/utils/ble_info_provider.dart';
+import 'package:ble_uart/utils/shared_prefs_utils.dart';
 import 'package:ble_uart/utils/database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/bluetooth_off_screen.dart';
@@ -26,7 +29,7 @@ Future<void> main() async{
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Alarm.init(showDebugLogs: true);
-  await CatheterSharedPrefs().init();
+  await SharedPrefsUtil().init();
   print("db = DatabaseModel");
   final db = DatabaseModel();
   print("db get database");
@@ -37,7 +40,7 @@ Future<void> main() async{
 
   runApp(
       ChangeNotifierProvider(
-          create: (context) => BLEInfo(),
+          create: (context) => BLEInfoProvider(),
         child: const FlutterBlueApp(),
       ),
   );
@@ -58,12 +61,16 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown; // state unknown for IOS
   bool registered = false;
   String name = "";
+  bool ringing = false;
 
   late StreamSubscription<BluetoothAdapterState> _adapterStateStateSubscription; // stream state subscription
   late SharedPreferences pref;
 
   late List<AlarmSettings> alarms = [];
   static StreamSubscription<AlarmSettings>? subscription;
+
+  late String userName;
+  late String? guardian;
 
   @override
   void initState() { // Identify whether the adapter is connected (listening)
@@ -83,29 +90,13 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
     //   => navigateToRingScreen(alarmSettings),
     // );
 
+    // if (Alarm.android) {
+    //   checkAndroidNotificationPermission();
+    // }
+
   }
 
-  void loadAlarms() {
-    setState(() {
-      print("[alarm_set_screen] load alarms start");
-      try{
-        alarms = Alarm.getAlarms();
-        alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
-      }catch(e){
-        print("[alarm_set_screen] no saved alarms");
-      }
-    });
-  }
 
-  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              AlarmAlertScreen(alarmSettings: alarmSettings),
-        ));
-    loadAlarms();
-  }
 
   @override
   void dispose() { // subscription cancel
@@ -120,6 +111,12 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
     try{
       registered = pref.getBool("registered")!;
       name = pref.getString("name")!;
+
+      if(pref.containsKey("ringing")){
+        setState(() {
+          ringing = pref.getBool("ringing")!;
+        });
+      }
     }catch(e){
       registered = false;
       if (kDebugMode) {
@@ -130,6 +127,10 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
 
   @override
   Widget build(BuildContext context) {
+
+    // Background.startFlutterBackgroundService(() async{
+    //   Background.alarmSendEmail();
+    // });
     // NO NEED
     // Widget screen = _adapterState == BluetoothAdapterState.on
     //     ? ScanScreen() // if the device's bluetooth is on then widget to ScanScreen()
