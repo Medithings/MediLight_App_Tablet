@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
-import 'package:alarm/service/storage.dart';
+import 'package:alarm/service/alarm_storage.dart';
+
 import 'package:ble_uart/screens/bottom_navigation_screen.dart';
 import 'package:ble_uart/utils/back_ground_service.dart';
 import 'package:ble_uart/utils/extra.dart';

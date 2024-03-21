@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:alarm/alarm.dart';
-import 'package:alarm/service/storage.dart';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:ble_uart/screens/alarm_alert_screen.dart';
 import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/screens/onboarding_screen.dart';

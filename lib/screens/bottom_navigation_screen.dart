@@ -3,7 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:alarm/alarm.dart';
-import 'package:alarm/service/storage.dart';
+import 'package:alarm/model/alarm_settings.dart';
+
 import 'package:ble_uart/screens/alarm_set_screen.dart';
 import 'package:ble_uart/screens/catheter_count_screen.dart';
 import 'package:ble_uart/screens/home_screen.dart';
