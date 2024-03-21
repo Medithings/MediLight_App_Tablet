@@ -39,6 +39,10 @@ dependencies:
   intl: ^0.18.0
   logger: ^2.0.2+1
   alarm: ^3.0.5
+#  alarm:
+#    git:
+#      url: https://github.com/Medithings/flutter_alarm_fork.git
+#      ref: main
   flutter_onboarding_slider: ^1.0.11
   lottie: ^3.0.0
   flutter_form_builder: ^9.1.1
