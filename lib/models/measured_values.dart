@@ -1,5 +1,5 @@
 class MeasuredValues {
-  final String? timeStamp;
+  final String? mTimeStamp;
   final String? lednum;
   final double? one;
   final double? two;
@@ -15,7 +15,7 @@ class MeasuredValues {
   final double? twelve;
 
   MeasuredValues({
-    this.timeStamp,
+    this.mTimeStamp,
     this.lednum,
     this.one,
     this.two,
@@ -32,7 +32,7 @@ class MeasuredValues {
   });
 
   Map<String, dynamic> toMap() => {
-    'timeStamp': timeStamp,
+    'mTimeStamp': mTimeStamp,
     'lednum': lednum,
     'one': one,
     'two': two,

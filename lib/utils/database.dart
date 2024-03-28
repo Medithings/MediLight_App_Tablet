@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:ble_uart/models/agc_values.dart';
 import 'package:ble_uart/models/measured_time.dart';
 import 'package:ble_uart/models/measured_values.dart';
+import 'package:ble_uart/models/temperature_values.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
+
+import '../models/ac_gy_vlaues.dart';
 
 class DatabaseModel{
   Database? _database;
@@ -78,7 +81,7 @@ class DatabaseModel{
 
     db.execute(''' 
     CREATE TABLE measured_values(
-      timeStamp TEXT,
+      mTimeStamp TEXT,
       LEDNUM TEXT,
       one REAL,
       two REAL,
@@ -92,11 +95,24 @@ class DatabaseModel{
       ten REAL,
       eleven REAL,
       twelve REAL,
-      PRIMARY KEY(timeStamp, LEDNUM)
+      PRIMARY KEY(mTimeStamp, LEDNUM)
       );
     ''');
     // TODO: indexing LEDNUM
 
+    db.execute('''
+    CREATE TABLE etc(
+      eTimeStamp TEXT,
+      acc_x INTEGER,
+      acc_y INTEGER,
+      acc_z INTEGER,
+      gyr_x INTEGER,
+      gyr_y INTEGER,
+      gyr_z INTEGER,
+      temper REAL,
+      mTimeStamp TEXT
+      );
+    ''');
 
     db.execute('''
     CREATE TABLE led_pd(
@@ -149,7 +165,7 @@ class DatabaseModel{
     );
   }
 
-  Future<void>insertingAGC(AgcValues item) async{
+  Future<void> insertingAGC(AgcValues item) async{
     var db = await database;
 
     await db.insert(
@@ -158,11 +174,38 @@ class DatabaseModel{
     );
   }
 
+  Future<void> insertTemperature(TemperatureValues item) async{
+    var db = await database;
+
+    await db.rawInsert(
+      "INSERT INTO etc(eTimeStamp, temper) VALUES(${item.eTimeStamp}, ${item.temperature})"
+    );
+  }
+
+  Future<void> insertingACGY(ACGY item) async{
+    var db = await database;
+
+    print("inserintACGY: item.eTimeStamp = ${item.eTimeStamp}");
+    await db.rawUpdate(
+      "UPDATE etc SET eTimestamp = ?, acc_x = ?, acc_y = ?, acc_z = ?, gyr_x = ?, gyr_y = ?, gyr_z = ? WHERE eTimeStamp = ?",
+      ['${item.eTimeStamp}, ${item.accX}, ${item.accY}, ${item.accZ}, ${item.gyrX}, ${item.gyrY}, ${item.gyrZ}, ${item.eTimeStamp}']
+    );
+    await db.update(
+      "etc",
+      {
+        "eTimeStamp" : "${item.eTimeStamp}",
+        "acc_x" : "${item.accX}",
+        "acc_y" : "${item.accY}",
+        "acc_z" : "${item.accZ}",
+      },
+    );
+  }
+
   Future<List<MeasuredTime>> timeStampGroupBy() async {
     var db = await database;
 
     // testTable 테이블에 있는 모든 field 값을 maps에 저장한다.
-    final List<Map<String, dynamic>> maps = await db.rawQuery("SELECT timeStamp FROM measured_values GROUP BY timeStamp ORDER BY timeStamp DESC");
+    final List<Map<String, dynamic>> maps = await db.rawQuery("SELECT mTimeStamp FROM measured_values GROUP BY mTimeStamp ORDER BY mTimeStamp DESC");
 
     return List.generate(maps.length, (index) {
       return MeasuredTime(

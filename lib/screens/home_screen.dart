@@ -6,6 +6,7 @@ import 'package:ble_uart/screens/between_screen.dart';
 import 'package:ble_uart/utils/back_ground_service.dart';
 import 'package:ble_uart/utils/ble_info_provider.dart';
 import 'package:ble_uart/utils/extra.dart';
+import 'package:ble_uart/utils/parsing_ac_gy.dart';
 import 'package:ble_uart/utils/parsing_measured.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ import 'package:rive/rive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
+import '../utils/parsing_temperature.dart';
 import '../utils/shared_prefs_utils.dart';
 import '../utils/database.dart';
 
@@ -89,6 +91,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   final spu = SharedPrefsUtil();
 
   late bool didPassBetween;
+  late double temperature;
+
+  late String timeStampForDBETC;
 
   @override
   void initState() {
@@ -122,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     levelIdx = 0;
     batteryValue.value = 0;
     riveIdx = -1;
+    temperature = 0;
 
     mTimeStamp();
 
@@ -442,7 +448,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
               patchState = 7;
             });
             if(areYouGoingToWrite) {
-              write("Sj");
+              //TODO: 여기서 온도 측정, 6축 센서 측정
+              write("So");
             } else {
               write("status0");
             }
@@ -456,14 +463,61 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         break;
 
         case 7:{
+          if(msgString.contains("To")){
+            setState(() {
+              timeStampForDBETC = DateFormat("yyyy/MM/dd/HH/mm/ss/SSS").format(DateTime.now()).toString();
+              patchState = 8;
+              msgString = msgString.replaceAll("To", "");
+              temperature = double.parse(msgString.trim());
+            });
+            // TODO: timeStampForDBETC를 가지고 etc table에 temper 넣기
+            print("To(temperature): $temperature");
+            print("to TSDBETC: $timeStampForDBETC");
+            ParsingTemperature(timeStampForDBETC, temperature);
+
+            /// TODO: temperature 이 벗어 나면
+            /// write("status0"); patchState = 0; measuring = false; areYouGoingToWrite = false;
+            write("Sp");
+          }
+          else{
+            setState(() {
+              patchState = -1;
+            });
+          }
+        }
+
+        case 8:{
+          if(msgString.contains("Tp")){
+            setState(() {
+              patchState = 9;
+            });
+            msgString = msgString.replaceAll("Tp", "");
+            print("tp TSDBETC: $timeStampForDBETC");
+            ParsingAcGy(timeStampForDBETC, msgString);
+            print("Sp(Gyro sensor): $msgString");
+
+            /// TODO: 여기서 Sj 전에 Tp 값이 오차 범위 내에 있는지 확인 후 Sj
+            /// 만약 오차 범위를 벗어 나면
+            /// write("status0"); patchState = 0; measuring = false; areYouGoingToWrite = false;
+            write("Sj");
+          }
+          else{
+            setState(() {
+              patchState = -1;
+            });
+          }
+
+        }
+
+        case 9:{
           if(msgString.contains("Tj")){
             if(kDebugMode){
               print("[HomeScreen] checking() Tj: patchState $patchState");
             }
             tjmsg.add(msgString);
             if(tjmsg.length % 24 == 0 && tjmsg.isNotEmpty){
-              var timeStampForDB = DateFormat("yyyy/MM/dd/HH/mm/ss/SSS").format(DateTime.now());
-              ParsingMeasured(timeStampForDB, tjmsg);
+
+              ParsingMeasured(timeStampForDBETC, tjmsg);
               if(kDebugMode){
                 print("[HOMESCREEN] PARSING DONE");
               }
@@ -1127,7 +1181,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                         ],
                                       ),
                                     );
-
                                   },
                                 ),
                               ),
