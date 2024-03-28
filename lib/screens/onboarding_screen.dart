@@ -1,6 +1,7 @@
 import 'package:ble_uart/screens/register_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:lottie/lottie.dart';
 
@@ -17,6 +18,7 @@ class OnBoardingScreen extends StatelessWidget {
         brightness: Brightness.light,
       ),
       home: OnBoardingSlider(
+        centerBackground: true,
         headerBackgroundColor: Colors.white,
         finishButtonText: 'Register',
         finishButtonStyle: const FinishButtonStyle(backgroundColor: Colors.blueGrey,),
@@ -30,7 +32,7 @@ class OnBoardingScreen extends StatelessWidget {
         skipTextButton: Text(
           'skip',
           style: TextStyle(
-            fontSize: 17,
+            fontSize: 23,
             color: kDarkBlueColor,
             fontWeight: FontWeight.bold,
           ),
@@ -51,50 +53,75 @@ class OnBoardingScreen extends StatelessWidget {
         totalPage: 4,
         pageBackgroundColor: Colors.white,
         background: [
-          Column(
-            children: [
-              const SizedBox(height: 60,),
-              SizedBox(
-                width: MediaQuery.of(context).size.width*0.97,
-                height: MediaQuery.of(context).size.height*0.38,
-                child: Lottie.asset('assets/lottie/first.json', width: 300, height: 230, fit: BoxFit.fill,),
-              ),
-            ],
+          // Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   crossAxisAlignment: CrossAxisAlignment.center,
+          //   children: [
+          //     const SizedBox(height: 60,),
+          //     Container(
+          //       // color: Colors.red,
+          //       width: MediaQuery.of(context).size.width*0.97,
+          //       height: MediaQuery.of(context).size.height*0.46,
+          //       child: Lottie.asset('assets/lottie/first.json', width: 300, height: 230, fit: BoxFit.fill,),
+          //     ),
+          //   ],
+          // ),
+          Container(
+            // color: Colors.red,
+            width: MediaQuery.of(context).size.width*0.97,
+            height: MediaQuery.of(context).size.height*0.54,
+            child: Lottie.asset('assets/lottie/first.json', width: 300, height: 230, fit: BoxFit.fill,),
           ),
-          Column(
-            children: [
-              const SizedBox(height: 50,),
-              Row(
-                children: [
-                  const SizedBox(width: 15,),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width*0.90,
-                    height: MediaQuery.of(context).size.height*0.45,
-                    child: Lottie.asset('assets/lottie/second.json', width: 300, height: 230, fit: BoxFit.fill,),
-                  ),
-                ],
-              ),
-            ],
+          // Column(
+          //   crossAxisAlignment: CrossAxisAlignment.center,
+          //   children: [
+          //     const SizedBox(height: 50,),
+          //     Row(
+          //       children: [
+          //         const SizedBox(width: 15,),
+          //         SizedBox(
+          //           width: MediaQuery.of(context).size.width*0.90,
+          //           height: MediaQuery.of(context).size.height*0.54,
+          //           child: Lottie.asset('assets/lottie/second.json', fit: BoxFit.fill,),
+          //         ),
+          //       ],
+          //     ),
+          //   ],
+          // ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width*0.5,
+            height: MediaQuery.of(context).size.height*0.6,
+            child: Lottie.asset('assets/lottie/second.json', fit: BoxFit.fill,),
           ),
-          Column(
-            children: [
-              const SizedBox(height: 70,),
-              SizedBox(
-                width: MediaQuery.of(context).size.width*0.97,
-                height: MediaQuery.of(context).size.height*0.38,
-                child: Lottie.asset('assets/lottie/third.json', width: 300, height: 230, fit: BoxFit.fill,),
-              ),
-            ],
+          // Column(
+          //   children: [
+          //     const SizedBox(height: 70,),
+          //     SizedBox(
+          //       width: MediaQuery.of(context).size.width*0.97,
+          //       height: MediaQuery.of(context).size.height*0.38,
+          //       child: Lottie.asset('assets/lottie/third.json', width: 300, height: 230, fit: BoxFit.fill,),
+          //     ),
+          //   ],
+          // ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width*0.97,
+            height: MediaQuery.of(context).size.height*0.6,
+            child: Lottie.asset('assets/lottie/third.json', width: 300, height: 230, fit: BoxFit.fill,),
           ),
-          Column(
-            children: [
-              const SizedBox(height: 70,),
-              SizedBox(
-                width: MediaQuery.of(context).size.width*0.97,
-                height: MediaQuery.of(context).size.height*0.4,
-                child: Lottie.asset('assets/lottie/fourth.json', width: 300, height: 230, fit: BoxFit.fill,),
-              ),
-            ],
+          // Column(
+          //   children: [
+          //     const SizedBox(height: 70,),
+          //     SizedBox(
+          //       width: MediaQuery.of(context).size.width*0.97,
+          //       height: MediaQuery.of(context).size.height*0.4,
+          //       child: Lottie.asset('assets/lottie/fourth.json', width: 300, height: 230, fit: BoxFit.fill,),
+          //     ),
+          //   ],
+          // ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width*0.97,
+            height: MediaQuery.of(context).size.height*0.54,
+            child: Lottie.asset('assets/lottie/fourth.json', width: 300, height: 230, fit: BoxFit.fill,),
           ),
         ],
 
@@ -102,16 +129,12 @@ class OnBoardingScreen extends StatelessWidget {
 
         pageBodies: [
           Container(
-            alignment: Alignment.center,
             width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(
-                  height: 480,
-                ),
                 Text(
                   'First',
                   textAlign: TextAlign.center,
@@ -133,6 +156,7 @@ class OnBoardingScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 150,),
               ],
             ),
           ),
@@ -142,12 +166,9 @@ class OnBoardingScreen extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(
-                  height: 480,
-                ),
                 Text(
                   'Second',
                   textAlign: TextAlign.center,
@@ -169,6 +190,7 @@ class OnBoardingScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 150,),
               ],
             ),
           ),
@@ -178,12 +200,9 @@ class OnBoardingScreen extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(
-                  height: 480,
-                ),
                 Text(
                   'Third',
                   textAlign: TextAlign.center,
@@ -205,6 +224,7 @@ class OnBoardingScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 150,),
               ],
             ),
           ),
@@ -214,12 +234,9 @@ class OnBoardingScreen extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(
-                  height: 480,
-                ),
                 Text(
                   'Fourth',
                   textAlign: TextAlign.center,
@@ -241,6 +258,7 @@ class OnBoardingScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 150,),
               ],
             ),
           ),

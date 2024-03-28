@@ -354,24 +354,33 @@ class _AIScreenState extends State<AIScreen> {
   void _confirm(){
     showDialog(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: true,
         builder: (BuildContext context){
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
-            title: const Text("Confirming input data"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("측정 용량: ${txtController.text} ml"),
-              ],
+            title: const Text("Confirming input data", style: TextStyle(fontSize: 25,),),
+            content: SizedBox(
+              height: 150,
+              width: 330,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Measured Volume: ${txtController.text} ml", style: const TextStyle(fontSize: 20,),),
+                ],
+              ),
             ),
+            actionsAlignment: MainAxisAlignment.spaceEvenly,
             actions: [
               ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("취소"),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
+                },
+                child: const Text("Cancel"),
               ),
               ElevatedButton(
                 onPressed: (){
@@ -381,10 +390,11 @@ class _AIScreenState extends State<AIScreen> {
                     log += ":  ${txtController.text} ml";
                     measureLog.add(log);
                     txtController.clear();
-                    Navigator.of(context).pop();
                   });
+                  Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
                 },
-                child: const Text("측정"),
+                child: const Text("Enter"),
               ),
             ],
           );
@@ -395,24 +405,33 @@ class _AIScreenState extends State<AIScreen> {
   void _zeroConfirm(){
     showDialog(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: true,
         builder: (BuildContext context){
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
-            title: const Text("Zero confirm?"),
-            content: const Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("측정 용량: 0 ml"),
-              ],
+            title: const Text("Confirm 0 ml?", style: TextStyle(fontSize: 25,),),
+            content: const SizedBox(
+              height: 150,
+              width: 330,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Measured volume: 0 ml", style: TextStyle(fontSize: 20,),),
+                ],
+              ),
             ),
+            actionsAlignment: MainAxisAlignment.spaceEvenly,
             actions: [
               ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("취소"),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
+                },
+                child: const Text("Cancel"),
               ),
               ElevatedButton(
                 onPressed: (){
@@ -422,10 +441,11 @@ class _AIScreenState extends State<AIScreen> {
                     log += ":  0 ml";
                     measureLog.add(log);
                     txtController.clear();
-                    Navigator.of(context).pop();
                   });
+                  Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
                 },
-                child: const Text("측정"),
+                child: const Text("Measure"),
               ),
             ],
           );
@@ -441,24 +461,28 @@ class _AIScreenState extends State<AIScreen> {
   void trainConfirm(){
     showDialog(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: true,
         builder: (BuildContext context){
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
-            title: const Text("학습을 시작하시겠습니까?"),
+            title: const Text("Start training?", style: TextStyle(fontSize: 25,),),
             content: const Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("확인을 누르면 학습 페이지로 넘어갑니다"),
+                Text("Press enter to start training", style: TextStyle(fontSize: 20,),),
               ],
             ),
+            actionsAlignment: MainAxisAlignment.spaceEvenly,
             actions: [
               ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("취소"),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
+                },
+                child: const Text("Cancel"),
               ),
               ElevatedButton(
                 onPressed: (){
@@ -467,7 +491,7 @@ class _AIScreenState extends State<AIScreen> {
                   Navigator.of(context).popUntil((rr) => rr.isFirst);
                   Navigator.pushReplacement(context, route);
                 },
-                child: const Text("확인"),
+                child: const Text("Enter"),
               ),
             ],
           );
@@ -535,14 +559,14 @@ class _AIScreenState extends State<AIScreen> {
           title: const Row(
             children: [
               SizedBox(width: 20,),
-              Text("인공지능 학습", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25,),),
+              Text("AI Training", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30,),),
             ],
           ),
           elevation: 0.0,
           scrolledUnderElevation: 0.0,
           backgroundColor: Colors.white,
           centerTitle: false,
-          toolbarHeight: 80,
+          toolbarHeight: 130,
           automaticallyImplyLeading: false,
         ),
 
@@ -557,20 +581,23 @@ class _AIScreenState extends State<AIScreen> {
                   // mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(
-                      height: 20,
+                      height: 10,
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.9,
-                      height: 100,
+                      height: 150,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.black12,
                       ),
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 20, top: 20,),
-                        child: Text(
-                          "안내사항\n의료진의 안내에 따라주세요.",
-                          style: TextStyle(color: Colors.black54, fontSize: 17, ),
+                      child: const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 30.0),
+                          child: Text(
+                            "[ Announcement ]\nPlease follow the instruction of the medical staff.",
+                            style: TextStyle(color: Colors.black54, fontSize: 20, ),
+                          ),
                         ),
                       ),
                     ),
@@ -579,7 +606,7 @@ class _AIScreenState extends State<AIScreen> {
 
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.9,
-                      height: 80,
+                      height: 140,
                       child: FilledButton(
                         style: FilledButton.styleFrom(
                           backgroundColor: const Color.fromRGBO(126, 189, 194, 1),
@@ -591,7 +618,7 @@ class _AIScreenState extends State<AIScreen> {
                             write("agc");
                           });
                         },
-                        child: const Text("기기최적화", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                        child: const Text("Stabilize Patch", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
                       ),
                     ),
 
@@ -599,16 +626,16 @@ class _AIScreenState extends State<AIScreen> {
 
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.9,
-                      height: 80,
+                      height: 140,
                       child: FilledButton(
                         style: FilledButton.styleFrom(
                           backgroundColor: const Color.fromRGBO(126, 189, 194, 1),
                         ),
                         onPressed: _zeroConfirm,
-                        child: const Text("0ml   측정", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                        child: const Text("Measure 0ml", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
                       ),
                     ),
-                    const SizedBox(height: 30,),
+                    const SizedBox(height: 50,),
                     Row(
                       children: [
                         Padding(
@@ -620,7 +647,8 @@ class _AIScreenState extends State<AIScreen> {
                               controller: txtController,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: '측정 용량을 적어주세요',
+                                labelText: 'Enter the volume of the measurement',
+                                labelStyle: TextStyle(fontSize: 20,),
                               ),
                             ),
                           ),
@@ -630,13 +658,13 @@ class _AIScreenState extends State<AIScreen> {
                         ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.2,
-                          height: 52,
+                          height: 70,
                           child: FilledButton(
                             style: FilledButton.styleFrom(
                               backgroundColor: const Color.fromRGBO(35, 31, 32, 1),
                             ),
                             onPressed: _confirm,
-                            child: const Text("확인", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
+                            child: const Text("ENTER", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
                           ),
                         ),
                       ],
@@ -654,7 +682,7 @@ class _AIScreenState extends State<AIScreen> {
                           children: [
                             Icon(Icons.book),
                             SizedBox(width: 10,),
-                            Text("학습 로그", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25,),),
+                            Text("Measurement", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25,),),
                           ],
                         ),
                       ),
@@ -672,7 +700,7 @@ class _AIScreenState extends State<AIScreen> {
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 25, top: 25),
+                            padding: const EdgeInsets.only(left: 40, top: 25),
                             child: ListView.builder(
                                 controller: _scrollController,
                                 scrollDirection: Axis.vertical,
@@ -687,7 +715,7 @@ class _AIScreenState extends State<AIScreen> {
                                       Text(
                                         measureLog[index],
                                         style: const TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 25,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -702,14 +730,17 @@ class _AIScreenState extends State<AIScreen> {
                     ): Center(
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.9,
-                        height: 70,
+                        height: 100,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           color: Colors.black12,
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.only(left: 20, top: 20,),
-                          child: Text("아직 측정된 데이터가 없습니다", style: TextStyle(fontSize: 17, color: Colors.black54,),),
+                        child: const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 30.0),
+                            child: Text("There's no data yet", style: TextStyle(fontSize: 20, color: Colors.black54,),),
+                          ),
                         ),
                       ),
                     ),
@@ -720,13 +751,13 @@ class _AIScreenState extends State<AIScreen> {
                       padding: const EdgeInsets.only(top: 30, bottom: 20,),
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.9,
-                        height: 70,
+                        height: 120,
                         child: FilledButton(
                           style: FilledButton.styleFrom(
                             backgroundColor: Colors.blueGrey,
                           ),
                           onPressed: trainConfirm,
-                          child: const Text("학습 시작", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                          child: const Text("Training Start", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
                         ),
                       ),
                     ): Container(),

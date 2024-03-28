@@ -68,6 +68,7 @@ class _ScanResultTileState extends State<ScanResultTile> {
           Text(
             widget.result.device.platformName,
             overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 25,),
           ),
           // before:
           // Text(
@@ -126,7 +127,10 @@ class _ScanResultTileState extends State<ScanResultTile> {
       onTap: (widget.result.advertisementData.connectable) ? widget.onTap : null,
       child: ListTile(
         title: _buildTitle(context),
-        leading: Text(widget.result.rssi.toString()),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20,),
+          child: Text(widget.result.rssi.toString(), style: TextStyle(fontSize: 25,),),
+        ),
         // before: trailing: _buildConnectButton(context),
         // after: no _buildConnectButton
 

@@ -74,29 +74,85 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
   void _confirmDialogue(){
     showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (BuildContext context){
         return AlertDialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
-          title: const Text("Confirm your input data"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Name: $name"),
-              Text("Age: $age"),
-              Text("Height: $height"),
-              Text("Weight: $weight"),
-              Text("Gender: $gender"),
-              Text("Guardian: ${guardian? guardianEmail: guardianInformString[1]}"),
-            ],
+          title: const Text("Confirm your input data", style: TextStyle(fontSize: 25,),),
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.48,
+            height: MediaQuery.of(context).size.height * 0.23,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    text: 'Name: ',
+                    style: const TextStyle(fontSize: 25, color: Colors.black),
+                    children: <TextSpan>[
+                      TextSpan(text: name, style: const TextStyle(fontSize: 25, color: Colors.blueGrey,),),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Age: ',
+                    style: const TextStyle(fontSize: 25, color: Colors.black),
+                    children: <TextSpan>[
+                      TextSpan(text: age, style: const TextStyle(fontSize: 25, color: Colors.blueGrey,),),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Height: ',
+                    style: const TextStyle(fontSize: 25, color: Colors.black),
+                    children: <TextSpan>[
+                      TextSpan(text: height, style: const TextStyle(fontSize: 25, color: Colors.blueGrey,),),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Weight: ',
+                    style: const TextStyle(fontSize: 25, color: Colors.black),
+                    children: <TextSpan>[
+                      TextSpan(text: weight, style: const TextStyle(fontSize: 25, color: Colors.blueGrey,),),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Gender: ',
+                    style: const TextStyle(fontSize: 25, color: Colors.black),
+                    children: <TextSpan>[
+                      TextSpan(text: gender, style: const TextStyle(fontSize: 25, color: Colors.blueGrey,),),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Guardian: ',
+                    style: const TextStyle(fontSize: 25, color: Colors.black),
+                    children: <TextSpan>[
+                      guardian?
+                      TextSpan(text: guardianEmail, style: const TextStyle(fontSize: 25, color: Colors.blueGrey,),)
+                      : TextSpan(text: guardianInformString[1], style: const TextStyle(fontSize: 25, color: Colors.blueGrey,),)
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: [
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text("취소"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () async{
@@ -127,7 +183,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
                 //   : navigator.pushReplacement(MaterialPageRoute(builder: (context) => const FirstConnectScreen(),),);
                 navigator.pushReplacement(MaterialPageRoute(builder: (context) => const FirstConnectScreen(),),);
               },
-              child: const Text("확인"),
+              child: const Text("Enter"),
             ),
           ],
         );
@@ -145,7 +201,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
         children: [
           FormBuilderTextField(
             name: 'name',
-            decoration: const InputDecoration(labelText: 'Insert name', hintText: "ex) David"),
+            decoration: const InputDecoration(labelText: 'Insert name', hintText: "ex) David", labelStyle: TextStyle(fontSize: 20,)),
             validator: FormBuilderValidators.compose([
               FormBuilderValidators.required(),
             ]),
@@ -154,7 +210,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
           FormBuilderTextField(
             keyboardType: TextInputType.number,
             name: 'age',
-            decoration: const InputDecoration(labelText: 'Insert age', hintText: "ex) 25"),
+            decoration: const InputDecoration(labelText: 'Insert age', hintText: "ex) 25", labelStyle: TextStyle(fontSize: 20,)),
             validator: FormBuilderValidators.compose([
               // FormBuilderValidators.required(),
             ]),
@@ -163,7 +219,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
           FormBuilderTextField(
             keyboardType: TextInputType.number,
             name: 'height',
-            decoration: const InputDecoration(labelText: 'Insert height (cm)', hintText: "ex) 178"),
+            decoration: const InputDecoration(labelText: 'Insert height (cm)', hintText: "ex) 178", labelStyle: TextStyle(fontSize: 20,)),
             validator: FormBuilderValidators.compose([
               FormBuilderValidators.required(),
             ]),
@@ -172,7 +228,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
           FormBuilderTextField(
             keyboardType: TextInputType.number,
             name: 'weight',
-            decoration: const InputDecoration(labelText: 'Insert weight (kg)', hintText: "ex) 70"),
+            decoration: const InputDecoration(labelText: 'Insert weight (kg)', hintText: "ex) 70", labelStyle: TextStyle(fontSize: 20,)),
             validator: FormBuilderValidators.compose([
               FormBuilderValidators.required(),
             ]),
@@ -183,11 +239,11 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
             options: const <FormBuilderFieldOption>[
               FormBuilderFieldOption(
                 value: 'm',
-                child: Text('Male'),
+                child: Text('Male', style: TextStyle(fontSize: 20,),),
               ),
               FormBuilderFieldOption(
                 value: 'f',
-                child: Text('Female'),
+                child: Text('Female', style: TextStyle(fontSize: 20,),),
               ),
             ],
             initialValue: 'm',
@@ -204,7 +260,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
               return ListTileTheme(
                 horizontalTitleGap: 5.0,
                 child: CheckboxListTile(
-                  title: const Text('I want to register my guardian'),
+                  title: const Text('I want to register my guardian', style: TextStyle(fontSize: 20,),),
                   controlAffinity: ListTileControlAffinity.leading,
                   value: guardian,
                   contentPadding: EdgeInsets.zero,
@@ -239,8 +295,8 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
                     borderSide: const BorderSide(color: Colors.transparent),
                     borderRadius: BorderRadius.circular(20.0),
                   ),
-                  hintText: "Guardian's email",
-                  hintStyle: const TextStyle(fontSize: 16,color:Colors.black45),
+                  hintText: "  Guardian's email",
+                  hintStyle: const TextStyle(fontSize: 20,color:Colors.black45),
                   fillColor: Colors.grey.shade200,
                   filled: true,
                   counterText: "",
@@ -266,7 +322,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
                 padding: EdgeInsets.only(left: 20, right: 10,),
                 child: Text(
                   "If you register your guardian,\nyour guardian could receive an email when the time you need to measure.",
-                  style: TextStyle(color: Colors.black54, fontSize: 17, ),
+                  style: TextStyle(color: Colors.black54, fontSize: 18, ),
                 ),
               ),
             ),
@@ -311,7 +367,7 @@ class _RegisterFormFieldState extends State<RegisterFormField> {
                   }
                 }
               },
-              child: const Text('Submit', style: TextStyle(color: Colors.white),),
+              child: const Text('Submit', style: TextStyle(color: Colors.white, fontSize: 20,),),
             ),
           ),
           const SizedBox(width: 10,),

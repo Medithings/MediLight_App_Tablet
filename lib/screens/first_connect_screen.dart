@@ -188,15 +188,15 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
 
   Widget buildScanButton(BuildContext context) {
     if (FlutterBluePlus.isScanningNow) {
-      return FloatingActionButton(
+      return FloatingActionButton.large(
         onPressed: onStopPressed,
         backgroundColor: Colors.red,
         child: const Icon(Icons.stop),
       );
     } else {
-      return FloatingActionButton(
+      return FloatingActionButton.large(
         onPressed: onScan,
-        child: const Text("SCAN"),
+        child: const Text("SCAN", style: TextStyle(fontSize: 20,),),
       );
     }
   }
@@ -225,12 +225,21 @@ class _FirstConnectScreenState extends State<FirstConnectScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.grey,
+        toolbarHeight: 130,
         title: const Text('Finding Devices'),
+        titleTextStyle: const TextStyle(fontSize: 40, color: Colors.black),
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back_rounded, size: 50,),
+        ),
       ),
+
       body: RefreshIndicator(
         onRefresh: onRefresh,
         child: ListView(
           children: <Widget>[
+            const SizedBox(height: 20,),
             // no need system devices
             // ..._buildSystemDeviceTiles(context),
             ..._buildScanResultTiles(context),
