@@ -32,7 +32,6 @@ class BottomNavigationScreen extends StatefulWidget {
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _currentIndex = 0;
   late List<AlarmSettings> alarms = [];
-  static StreamSubscription<AlarmSettings>? subscription;
 
   @override
   void initState() {
@@ -45,12 +44,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     loadAlarms();
 
     print("[alarm_set_screen] load alarm done");
-
-    subscription ??= Alarm.ringStream.stream.listen((alarmSettings){
-      print("GG");
-      // sendEmail();
-      navigateToRingScreen(alarmSettings);
-    });
   }
 
   Future<void> sendEmail() async {
@@ -134,18 +127,22 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       body: SafeArea(
         child: _widgetOptions.elementAt(_currentIndex),
       ),
-      bottomNavigationBar: SalomonBottomBar(
-        key: bottomNavGKey,
-        backgroundColor: Colors.white,
-        currentIndex: _currentIndex,
-        onTap: (i) => setState(() => _currentIndex = i),
-        items: [
-          SalomonBottomBarItem(icon: const Icon(Icons.home), title: const Text("Home"), selectedColor: Colors.blueGrey),
-          SalomonBottomBarItem(icon: const Icon(Icons.check_box_outlined), title: const Text("Catheter"), selectedColor: Colors.pinkAccent),
-          SalomonBottomBarItem(icon: const Icon(Icons.notifications_rounded), title: const Text("Alarm"), selectedColor: Colors.orange),
-          SalomonBottomBarItem(icon: const Icon(Icons.settings), title: const Text("Settings"), selectedColor: Colors.deepPurpleAccent),
-        ],
+      bottomNavigationBar: SizedBox(
+        height: 120,
+        child: SalomonBottomBar(
+          key: bottomNavGKey,
+          backgroundColor: Colors.white,
+          currentIndex: _currentIndex,
+          onTap: (i) => setState(() => _currentIndex = i),
+          items: [
+            SalomonBottomBarItem(icon: const Icon(Icons.home, size: 40,), title: const Text("Home", style: TextStyle(fontSize: 15),), selectedColor: Colors.blueGrey),
+            SalomonBottomBarItem(icon: const Icon(Icons.check_box_outlined, size: 40,), title: const Text("Catheter", style: TextStyle(fontSize: 15),), selectedColor: Colors.pinkAccent),
+            SalomonBottomBarItem(icon: const Icon(Icons.notifications_rounded, size: 40,), title: const Text("Alarm", style: TextStyle(fontSize: 15),), selectedColor: Colors.orange),
+            SalomonBottomBarItem(icon: const Icon(Icons.settings, size: 40,), title: const Text("Settings", style: TextStyle(fontSize: 15),), selectedColor: Colors.deepPurpleAccent),
+          ],
+        ),
       ),
+
     );
   }
 }

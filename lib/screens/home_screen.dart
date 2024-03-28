@@ -648,18 +648,18 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   List<TextStyle> cmtTitleStyle = [
     const TextStyle(
-      fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green,
+      fontSize: 40, fontWeight: FontWeight.bold, color: Colors.green,
     ),
     const TextStyle(
-      fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange,
+      fontSize: 30, fontWeight: FontWeight.bold, color: Colors.orange,
     ),
     const TextStyle(
-      fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red,
+      fontSize: 30, fontWeight: FontWeight.bold, color: Colors.red,
     ),
   ];
 
   List<String> cmt = [" to do your activities", " for your urination", "  do your catheterization",];
-  TextStyle cmtStyle = const TextStyle(fontSize: 15, color: Colors.black,);
+  TextStyle cmtStyle = const TextStyle(fontSize: 30, color: Colors.black,);
 
   void updatingLevelIdx(){
     if(_isConnected){
@@ -807,29 +807,26 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         scrolledUnderElevation: 0.0,
         backgroundColor: Colors.white,
         elevation: 0.0,
-        toolbarHeight: 65,
-        title: Text(todayString, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
+        toolbarHeight: 120,
+        title: Text(todayString, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w600),),
         centerTitle: true,
         automaticallyImplyLeading: false,
         leading: Row(
           children: [
-            Container(width: 20,),
-            Image.asset("assets/logo.png", width: 80),
+            Container(width: 50,),
+            Image.asset("assets/logo.png", width: 120),
           ],
         ),
-        leadingWidth: 100,
+        leadingWidth: 170,
         actions: [
-          InkWell(
-            onTap: (){},
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _isConnected? const Icon(Icons.link, size: 30,):const Icon(Icons.link_off, size: 30,),
-                _isConnected? const Text("Linked", style: TextStyle(fontWeight: FontWeight.bold),):const Text("Unlinked", style: TextStyle(fontWeight: FontWeight.bold),),
-              ],
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _isConnected? const Icon(Icons.link, size: 38,):const Icon(Icons.link_off, size: 38,),
+              _isConnected? const Text("Linked", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),):const Text("Unlinked", style: TextStyle(fontWeight: FontWeight.bold),),
+            ],
           ),
-          Container(width: 25,),
+          Container(width: 50,),
         ],
       ),
       body: PageStorage(
@@ -846,9 +843,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                       slivers: [
                         SliverToBoxAdapter(  // 단일 위젯은 요걸로
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 15,),
+                            padding: const EdgeInsets.only(left: 30, right: 30,),
                             child: Container(
-                              height: MediaQuery.of(context).size.height * 0.44,
+                              height: MediaQuery.of(context).size.height * 0.41,
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.transparent),
                                 color: cardColors[levelIdx],
@@ -860,9 +857,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                               child: Column(
                                 // crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 20,),
+                                  const SizedBox(height: 40,),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 40, right: 40),
+                                    padding: const EdgeInsets.only(left: 250, right: 250),
                                     child: Container(
                                       height: 80,
                                       decoration: BoxDecoration(
@@ -904,12 +901,12 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 20,),
+                                  const SizedBox(height: 80,),
                                   // Center(child: Lottie.asset('assets/walking.json', frameRate: FrameRate.max, width: 250, height: 230,)),
                                   SizedBox(
                                     // color: Colors.purpleAccent,
-                                    height: 200,
-                                    width: MediaQuery.of(context).size.height * 0.23,
+                                    height: 250,
+                                    width: MediaQuery.of(context).size.height * 0.2,
                                     child: RiveAnimation.asset(
                                       "assets/rive/lil_guy_updated.riv",
                                       fit: BoxFit.fill,
@@ -924,7 +921,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         ),
                         SliverToBoxAdapter(  // 단일 위젯은 요걸로
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 15,),
+                            padding: const EdgeInsets.only(left: 30, right: 30,),
                             child: Container(
                               height: MediaQuery.of(context).size.height * 0.15,
                               decoration: BoxDecoration(
@@ -936,19 +933,20 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                 ),
                               ),
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 // crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 15,),
+                                  // const SizedBox(height: 15,),
                                   // Center(child: Lottie.asset('assets/walking.json', frameRate: FrameRate.max, width: 250, height: 230,)),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 30.0, right: 30.0,),
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 30.0, right: 30.0,),
                                     child: Row(
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
-                                        const Text("Current", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
-                                        const Spacer(flex: 1,),
-                                        Text("Lv. $level", style: const TextStyle(color: Color.fromRGBO(42, 77, 20, 1), fontSize: 20, fontWeight: FontWeight.bold),),
+                                        Text("Current", style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),),
+                                        Spacer(flex: 1,),
+                                        // Text("Lv. $level", style: const TextStyle(color: Color.fromRGBO(42, 77, 20, 1), fontSize: 30, fontWeight: FontWeight.bold),),
                                       ],
                                     ),
                                   ),
@@ -958,9 +956,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                       width: MediaQuery.of(context).size.width * 0.82,
                                       animation: false,
                                       animationDuration: 1000,
-                                      lineHeight: 20.0,
+                                      lineHeight: 50.0,
                                       percent: level >= 0? level/maxLevel : 0/maxLevel,
-                                      center: Text("Lv. $level", style: const TextStyle(fontSize: 15,),),
+                                      center: Text("Lv. $level", style: const TextStyle(fontSize: 25,),),
                                       progressColor: const Color.fromRGBO(42, 77, 20, 1),
                                       backgroundColor: Colors.white,
                                     ),
@@ -971,9 +969,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
-                                        Text("Lv. $level", style: const TextStyle(color: Colors.white, fontSize: 17),),
+                                        const Text("Lv. 0", style: TextStyle(color: Color.fromRGBO(42, 77, 20, 1), fontSize: 25),),
                                         const Spacer(flex: 1,),
-                                        Text("Lv. $maxLevel", style: const TextStyle(color: Colors.white, fontSize: 17),),
+                                        Text("Lv. $maxLevel", style: const TextStyle(color: Color.fromRGBO(42, 77, 20, 1), fontSize: 25),),
                                       ],
                                     ),
                                   ),
@@ -990,11 +988,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                           collapsedHeight: MediaQuery.of(context).size.height * 0.1,
                           backgroundColor: Colors.white,
                           flexibleSpace: FlexibleSpaceBar(
-                            titlePadding: const EdgeInsets.only(left: 30.0, right: 0.0, bottom: 15.0),
+                            titlePadding: const EdgeInsets.only(left: 50.0, right: 0.0, bottom: 20.0),
                             title: RichText(
                               text: TextSpan(
                                 text: "Current Level: $level",
-                                style: TextStyle(fontSize: 23, color: cmtColors[levelIdx]),
+                                style: TextStyle(fontSize: 35, color: cmtColors[levelIdx]),
                                 children: [
                                   checkingCmt(),
                                   level < maxLevel/2?

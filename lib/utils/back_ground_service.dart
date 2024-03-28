@@ -285,34 +285,34 @@ void onStart(ServiceInstance service) async {
     scanningMethod();
   }
 
-  StreamSubscription<AlarmSettings>? alarmSubscription;
-  SharedPreferences _pref = await SharedPreferences.getInstance();
-  String userName = _pref.getString("name") ?? "No name";
-  String guardian = _pref.getString("guardianEmail") ?? "";
+  // StreamSubscription<AlarmSettings>? alarmSubscription;
+  // SharedPreferences _pref = await SharedPreferences.getInstance();
+  // String userName = _pref.getString("name") ?? "No name";
+  // String guardian = _pref.getString("guardianEmail") ?? "";
 
-  alarmSubscription ??= Alarm.ringStream.stream.listen((alarmSettings) async {
-    if(guardian == "") guardian = "isaac.lim@medithings.co.kr";
-
-    final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'origin': 'http://localhost',
-      },
-      body: json.encode({
-        'service_id': 'service_3gzs5mj',
-        'template_id': 'template_h9e6z72',
-        'user_id': 'DpL6M9GiRBZFBI1bh',
-        'accessToken': '1-6LZXIKob51cgNkHjbmt',
-        'template_params': {
-          'user_name': userName,
-          'send_to': guardian,
-        },
-      }),
-    );
-    print(response.body);
-  });
+  // alarmSubscription ??= Alarm.ringStream.stream.listen((alarmSettings) async {
+  //   if(guardian == "") guardian = "isaac.lim@medithings.co.kr";
+  //
+  //   final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
+  //   final response = await http.post(
+  //     url,
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'origin': 'http://localhost',
+  //     },
+  //     body: json.encode({
+  //       'service_id': 'service_3gzs5mj',
+  //       'template_id': 'template_h9e6z72',
+  //       'user_id': 'DpL6M9GiRBZFBI1bh',
+  //       'accessToken': '1-6LZXIKob51cgNkHjbmt',
+  //       'template_params': {
+  //         'user_name': userName,
+  //         'send_to': guardian,
+  //       },
+  //     }),
+  //   );
+  //   print(response.body);
+  // });
 
   // bring to foreground
   Timer.periodic(const Duration(seconds: 30), (timer) async {

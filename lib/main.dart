@@ -68,8 +68,8 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
   late StreamSubscription<BluetoothAdapterState> _adapterStateStateSubscription; // stream state subscription
   late SharedPreferences pref;
 
-  late List<AlarmSettings> alarms = [];
-  static StreamSubscription<AlarmSettings>? subscription;
+  // late List<AlarmSettings> alarms = [];
+  // static StreamSubscription<AlarmSettings>? subscription;
 
   late String userName;
   late String? guardian;
