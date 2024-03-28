@@ -37,7 +37,7 @@ void ParsingMeasured(String getTimeStamp, List<String> gain) async{
     twelve = double.parse(splitted[12].trim());
 
     await model.insertingMeasured(MeasuredValues(
-        timeStamp: getTimeStamp,
+        mTimeStamp: getTimeStamp,
         lednum: ledNum,
         one: one,
         two: two,

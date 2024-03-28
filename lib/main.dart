@@ -39,10 +39,12 @@ Future<void> main() async{
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true); // Log level 을 verbose 로 설정, syntax color on
 
   runApp(
-      ChangeNotifierProvider(
-          create: (context) => BLEInfoProvider(),
-        child: const FlutterBlueApp(),
-      ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_)=> BLEInfoProvider()),
+      ],
+      child: const FlutterBlueApp(),
+    ),
   );
 }
 
