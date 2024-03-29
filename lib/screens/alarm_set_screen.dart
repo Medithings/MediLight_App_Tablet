@@ -5,7 +5,6 @@ import 'package:alarm/model/alarm_settings.dart';
 import 'package:alarm/service/alarm_storage.dart';
 
 import 'package:ble_uart/screens/alarm_alert_screen.dart';
-import 'package:ble_uart/widgets/alarm_shortcut_button.dart';
 import 'package:ble_uart/widgets/alarm_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -133,12 +132,25 @@ class _AlarmSetScreenState extends State<AlarmSetScreen> {
     loadAlarms();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Alarms')),
+      appBar: AppBar(
+        title: const Text("    Alarm", style: TextStyle(fontSize: 35,),),
+        toolbarHeight: 120,
+        centerTitle: false,
+        shape: const Border(
+          bottom: BorderSide(
+            color: Colors.grey,
+            width: 0.5,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: alarms.isNotEmpty
             ? ListView.separated(
               itemCount: alarms.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
+              separatorBuilder: (context, index) => const Padding(
+                padding: EdgeInsets.only(right: 50.0, left: 50,),
+                child: Divider(height: 1),
+              ),
               itemBuilder: (context, index) {
                 return AlarmTile(
                   key: Key(alarms[index].id.toString()),
@@ -153,22 +165,24 @@ class _AlarmSetScreenState extends State<AlarmSetScreen> {
                 );
               },
             )
-            : Center(
+            : const Center(
               child: Text(
                 "No alarms set",
-                style: Theme.of(context).textTheme.titleMedium,
+                style: TextStyle(
+                  fontSize: 35,
+                ),
               ),
             ),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.only(bottom: 20, right: 30,),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            AlarmShortcutButton(refreshAlarms: loadAlarms),
-            FloatingActionButton(
+            // AlarmShortcutButton(refreshAlarms: loadAlarms),
+            FloatingActionButton.large(
               onPressed: () => navigateToAlarmScreen(null),
-              child: const Icon(Icons.alarm_add_rounded, size: 33),
+              child: const Icon(Icons.alarm_add_rounded, size: 50),
             ),
           ],
         ),

@@ -209,7 +209,7 @@ class DatabaseModel{
 
     return List.generate(maps.length, (index) {
       return MeasuredTime(
-        timeStamp: maps[index]['timeStamp'] as String,
+        timeStamp: maps[index]['mTimeStamp'] as String,
       );
     });
   }

@@ -33,19 +33,19 @@ class AlarmTile extends StatelessWidget {
       child: RawMaterialButton(
         onPressed: onPressed,
         child: Container(
-          height: 100,
-          padding: const EdgeInsets.all(35),
+          height: 200,
+          padding: const EdgeInsets.only(top: 50, left: 80, right: 80, bottom: 50),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 28,
+                  fontSize: 35,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const Icon(Icons.keyboard_arrow_right_rounded, size: 35),
+              const Icon(Icons.keyboard_arrow_right_rounded, size: 50),
             ],
           ),
         ),

@@ -44,18 +44,18 @@ class _BetweenScreenState extends State<BetweenScreen> {
   String remoteIdSaved="";
 
   late List<AlarmSettings> alarms = [];
-  static StreamSubscription<AlarmSettings>? subscription;
+  // static StreamSubscription<AlarmSettings>? subscription;
 
   @override
   void initState() {
     // TODO: implement initState
     Background.stopFlutterBackgroundService();
 
-    if(Platform.isAndroid){
-      AlarmStorage.init();
-      loadAlarms();
-      subscription ??= Alarm.ringStream.stream.listen((alarmSettings) => navigateToRingScreen(alarmSettings), );
-    }
+    // if(Platform.isAndroid){
+      // AlarmStorage.init();
+      // loadAlarms();
+      // subscription ??= Alarm.ringStream.stream.listen((alarmSettings) => navigateToRingScreen(alarmSettings), );
+    // }
 
     onScan();
 

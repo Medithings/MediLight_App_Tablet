@@ -14,7 +14,7 @@ class SettingsTile extends StatelessWidget {
     final navigator = Navigator.of(context);
 
     return SizedBox(
-      height: 50,
+      height: 100,
       child: InkWell(
         onTap: () => navigator.push(CupertinoPageRoute(builder: (context) => goto,),),
         child: Column(
@@ -25,26 +25,26 @@ class SettingsTile extends StatelessWidget {
                 Container(
                   color: Colors.white,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
+                    padding: const EdgeInsets.only(left: 80.0),
                     child: Container(
-                      width: 25,
-                      height: 25,
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.transparent),
                         color: bgColor,
                         borderRadius: const BorderRadius.all(
-                          Radius.circular(5),
+                          Radius.circular(10),
                         ),
                       ),
-                      child: Icon(stIcon, color: Colors.white, size: 20,),
+                      child: Icon(stIcon, color: Colors.white, size: 30,),
                     ),
                   ),
                 ),
                 const SizedBox(width: 15,),
-                Text(title, style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 18,),),
+                Text(title, style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 25,),),
                 const Spacer(flex: 1,),
-                const Icon(Icons.arrow_forward_ios_rounded, color: Colors.black38, size: 15,),
-                const SizedBox(width: 10,),
+                const Icon(Icons.arrow_forward_ios_rounded, color: Colors.black38, size: 30,),
+                const SizedBox(width: 50,),
               ],
             ),
           ],

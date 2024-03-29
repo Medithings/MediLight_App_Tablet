@@ -1,9 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:ui';
-
-import 'package:alarm/alarm.dart';
-import 'package:alarm/model/alarm_settings.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,13 +10,6 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-
-import '../screens/alarm_alert_screen.dart';
-
-late SharedPreferences _pref;
-String remoteIdSaved="";
-final List<ScanResult> _scanResults = [];
 
 const notificationChannelId = "mediLight_foreground";
 const notificationId = 888;
@@ -57,7 +46,7 @@ Future<void> initializeService() async{
   await service.configure(
     androidConfiguration: AndroidConfiguration(
       onStart: onStart,
-      isForegroundMode: true,
+      isForegroundMode: false,
       autoStart: true,
       notificationChannelId: notificationChannelId,
       initialNotificationTitle: "MediLight App is running for connection",
@@ -406,16 +395,6 @@ class Background {
       await _channel.invokeMethod('executeInBackground');
     }
   }
-
-  static Future<void> alarmSendEmail() async{
-    if(Platform.isAndroid){
-      await initializeService();
-    }else{
-      print("Go");
-      await _channel.invokeMethod('letsGo');
-    }
-  }
-
 
   // This method will write data on specific characteristic
   static Future<void> connectToDevice() async {

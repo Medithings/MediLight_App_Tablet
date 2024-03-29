@@ -137,52 +137,56 @@ class _CatheterCountScreenState extends State<CatheterCountScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              title: const Text("Catheter status"),
-              content: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 20,),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text("1️⃣ Enter your total catheter", style: TextStyle(fontSize: 18,),),
-                      ],
-                    ),
-                    const SizedBox(height: 10,),
-                    TextField(
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
-                      controller: txtController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'total catheter ex) 30',
+              title: const Text("Catheter status", style: TextStyle(fontSize: 30,),),
+              content: SizedBox(
+                width: 380,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 20,),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("1️⃣ Enter your total catheter", style: TextStyle(fontSize: 25,),),
+                        ],
                       ),
-                    ),
+                      const SizedBox(height: 10,),
+                      TextField(
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        controller: txtController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'total catheter ex) 30',
+                          labelStyle: TextStyle(fontSize: 20,),
+                        ),
+                      ),
 
-                    const SizedBox(height: 30,),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text("2️⃣ Select the due date", style: TextStyle(fontSize: 18,),),
-                      ],
-                    ),
-                    DatePickerWidget(
-                      looping: true,
-                      firstDate: DateTime(todayDate.year, todayDate.month, todayDate.day + 1),
-                      dateFormat: "dd/MMMM/yyyy",
-                      onChange: (DateTime newDate, _){
-                        setState(() {
-                          endDate = newDate;
-                        });
-                        print(endDate);
-                      },
-                    ),
-                  ],
+                      const SizedBox(height: 50,),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("2️⃣ Select the due date", style: TextStyle(fontSize: 25,),),
+                        ],
+                      ),
+                      DatePickerWidget(
+                        looping: true,
+                        firstDate: DateTime(todayDate.year, todayDate.month, todayDate.day + 1),
+                        dateFormat: "dd/MMMM/yyyy",
+                        onChange: (DateTime newDate, _){
+                          setState(() {
+                            endDate = newDate;
+                          });
+                          print(endDate);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
               actions: [
@@ -194,7 +198,7 @@ class _CatheterCountScreenState extends State<CatheterCountScreen> {
                         txtController.clear();
                         Navigator.of(context).pop();
                       },
-                      child: const Text("Cancel"),
+                      child: const Text("Cancel", style: TextStyle(fontSize: 20,),),
                     ),
                     TextButton(
                       onPressed: (){
@@ -236,7 +240,7 @@ class _CatheterCountScreenState extends State<CatheterCountScreen> {
                         txtController.clear();
                         Navigator.of(context).pop();
                       },
-                      child: const Text("Ok"),
+                      child: const Text("Ok", style: TextStyle(fontSize: 20,),),
                     ),
                   ],
                 ),
@@ -261,13 +265,18 @@ class _CatheterCountScreenState extends State<CatheterCountScreen> {
             title: const Text("[How To Use]"),
             content: const Text(
               """
-If you use one Catheter then press button 1 Used.
-If you want to modify total number of catheter,
-then just simply press the number.
-              
-** Caution **
-When you change your date, then the calculation will be wrong.
-IF you have changed your date, then simply just enter your status again.
+❗️ INITIAL SETTING
+1️⃣ Press the '0' which is located in the middle of the screen.
+2️⃣ Enter the total number of catheters and the due date for them.
+(until when do you plan to use the catheters)
+
+🥳 Now you're ready to use!
+
+❗️ HOW TO USE
+   *  Simply press '1 Used' when you use your catheter.
+   *  If you want to modify total number of catheter by pressing the
+   number which is located in the middle of the screen.
+   *  You can also see the status of the catheter in Home page.
               """,
               style: TextStyle(fontSize: 20,),
             ),
@@ -282,14 +291,21 @@ IF you have changed your date, then simply just enter your status again.
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Catheter Counting"),
+        title: const Text("    Catheter Counting", style: TextStyle(fontSize: 35,),),
+        toolbarHeight: 120,
         centerTitle: false,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(onPressed: _howToUse, icon: const Icon(Icons.info),),
+            padding: const EdgeInsets.only(right: 60.0),
+            child: IconButton(onPressed: _howToUse, icon: const Icon(Icons.info, size: 40,),),
           )
         ],
+        shape: const Border(
+          bottom: BorderSide(
+            color: Colors.grey,
+            width: 0.5,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -299,18 +315,18 @@ IF you have changed your date, then simply just enter your status again.
             const Row(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 30),
-                  child:  Text("Per day", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+                  padding: EdgeInsets.only(left: 80),
+                  child:  Text("Per day", style: TextStyle(fontSize: 33, fontWeight: FontWeight.bold),),
                 ),
               ],
             ),
 
-            const SizedBox(height: 10,),
+            const SizedBox(height: 30,),
             InkWell(
               onTap: _setTotal,
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
-              child: Text("$dayPer", style: const TextStyle(fontSize: 150, fontWeight: FontWeight.bold),),
+              child: Text("$dayPer", style: const TextStyle(fontSize: 250, fontWeight: FontWeight.bold),),
             ),
 
             const SizedBox(height: 20,),
@@ -318,8 +334,8 @@ IF you have changed your date, then simply just enter your status again.
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: 70,
-                  width: 150,
+                  height: 90,
+                  width: 200,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
                       backgroundColor: const Color(0xff50586C),
@@ -334,13 +350,13 @@ IF you have changed your date, then simply just enter your status again.
                         }
                       });
                     },
-                    child: const Text("1 Used", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),),
+                    child: const Text("1 Used", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white,),),
                   ),
                 ),
                 const SizedBox(width: 30,),
                 SizedBox(
-                  height: 70,
-                  width: 70,
+                  height: 90,
+                  width: 90,
                   child: Ink(
                     decoration: const ShapeDecoration(
                       color: Color(0xffDCE2F0),
@@ -366,46 +382,50 @@ IF you have changed your date, then simply just enter your status again.
             ),
 
             Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10, top: 100,),
+              padding: const EdgeInsets.only(left: 80, right: 30, bottom: 10, top: 100,),
               child: Row(
                 children: [
-                  const Text("Total Catheter", style: TextStyle(fontSize: 18,),),
+                  const Text("Total Catheter", style: TextStyle(fontSize: 25,),),
                   const Spacer(flex: 1,),
-                  yesNo? Text("${pref.totalC} / ${pref.initialC}", style: const TextStyle(fontSize: 18,),) : const Text("Empty", style: TextStyle(fontSize: 18,),),
+                  yesNo? Text("${pref.totalC} / ${pref.initialC}", style: const TextStyle(fontSize: 25,),) : const Text("Empty", style: TextStyle(fontSize: 25,),),
+                  const SizedBox(width: 80,),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10,),
+              padding: const EdgeInsets.only(left: 80, right: 30, bottom: 10,),
               child: Row(
                 children: [
-                  const Text("Daily Status", style: TextStyle(fontSize: 18,),),
+                  const Text("Daily Status", style: TextStyle(fontSize: 25,),),
                   const Spacer(flex: 1,),
-                  yesNo? Text("${pref.per} / ${pref.initPer}", style: const TextStyle(fontSize: 18,),) : const Text("Empty", style: TextStyle(fontSize: 18,),),
+                  yesNo? Text("${pref.per} / ${pref.initPer}", style: const TextStyle(fontSize: 25,),) : const Text("Empty", style: TextStyle(fontSize: 25,),),
+                  const SizedBox(width: 80,),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10,),
+              padding: const EdgeInsets.only(left: 80, right: 30, bottom: 10,),
               child: Row(
                 children: [
-                  const Text("Due Date", style: TextStyle(fontSize: 18,),),
+                  const Text("Due Date", style: TextStyle(fontSize: 25,),),
                   const Spacer(flex: 1,),
-                  yesNo? Text("${pref.endDate[0]}${pref.endDate[1]}${pref.endDate[2]}${pref.endDate[3]} / ${pref.endDate[4]}${pref.endDate[5]} / ${pref.endDate[6]}${pref.endDate[7]}", style: const TextStyle(fontSize: 18,),)
-                      : const Text("Empty", style: TextStyle(fontSize: 18,),),
+                  yesNo? Text("${pref.endDate[0]}${pref.endDate[1]}${pref.endDate[2]}${pref.endDate[3]} / ${pref.endDate[4]}${pref.endDate[5]} / ${pref.endDate[6]}${pref.endDate[7]}", style: const TextStyle(fontSize: 25,),)
+                      : const Text("Empty", style: TextStyle(fontSize: 25,),),
+                  const SizedBox(width: 80,),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30,),
+              padding: const EdgeInsets.only(left: 80, right: 30,),
               child: Row(
                 children: [
-                  const Text("D-day", style: TextStyle(fontSize: 18,),),
+                  const Text("D-day", style: TextStyle(fontSize: 25,),),
                   const Spacer(flex: 1,),
                   yesNo?
-                  endDate != todayDate? Text("D-${endDate.difference(todayDate).inDays + 1}", style: const TextStyle(fontSize: 18,),)
-                      : const Text("D-DAY", style: TextStyle(fontSize: 18,),)
-                      : const Text("Empty", style: TextStyle(fontSize: 18,),),
+                  endDate != todayDate? Text("D-${endDate.difference(todayDate).inDays + 1}", style: const TextStyle(fontSize: 25,),)
+                      : const Text("D-DAY", style: TextStyle(fontSize: 25,),)
+                      : const Text("Empty", style: TextStyle(fontSize: 25,),),
+                  const SizedBox(width: 80,),
                 ],
               ),
             ),

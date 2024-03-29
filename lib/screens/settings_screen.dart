@@ -48,21 +48,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: const Color.fromRGBO(225, 225, 225, 0.3),
       body: CustomScrollView(
         slivers: [
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 50,),
-          ),
+
           const SliverAppBar(
             backgroundColor: Colors.transparent,
-            title: Align(alignment: Alignment.centerLeft, child: Text("Settings", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,),)),
+            title: Align(alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 50.0),
+                  child: Text("Settings", style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold,),),
+                )),
             centerTitle: true,
+            toolbarHeight: 200,
             // flexibleSpace: Placeholder(),
-          ),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 15,),
           ),
           SliverToBoxAdapter(
             child: Container(
-              height: 70,
+              height: 120,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 border: Border(
@@ -77,40 +77,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Container(
                       color: Colors.white,
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 16.0),
+                        padding: const EdgeInsets.only(left: 50.0),
                         child: Container(
-                          width: 50,
-                          height: 50,
+                          width: 80,
+                          height: 80,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.transparent),
                             color: Colors.black12,
                             borderRadius: const BorderRadius.all(
-                              Radius.circular(30),
+                              Radius.circular(50),
                             ),
                           ),
                           child: const Icon(Icons.person, color: Colors.black38, size: 30,),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 15,),
+                    const SizedBox(width: 30,),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(name, style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 25,),),
-                        const Text("Account Settings", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15,),),
+                        Text(name, style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 30,),),
+                        const Text("Account Settings", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20,),),
                       ],
                     ),
                     const Spacer(flex: 1,),
-                    const Icon(Icons.arrow_forward_ios_rounded, color: Colors.black38, size: 15,),
-                    const SizedBox(width: 10,),
+                    const Icon(Icons.arrow_forward_ios_rounded, color: Colors.black38, size: 30,),
+                    const SizedBox(width: 50,),
                   ],
                 ),
               ),
             ),
           ),
           const SliverToBoxAdapter(
-            child: SizedBox(height: 20,),
+            child: SizedBox(height: 40,),
           ),
           SliverToBoxAdapter(
             child: Container(
@@ -127,10 +127,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     child: const SettingsTile(stIcon: Icons.notifications_rounded, title: "Alarm", goto: AlarmSetScreen(), bgColor: Colors.redAccent,),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 56.0),
-                    child: Divider(color: Color.fromRGBO(225, 225, 225, 1), height: 1,),
-                  ),
+                  Divider(color: Color.fromRGBO(225, 225, 225, 1), height: 1,),
                   Container(
                     decoration: const BoxDecoration(
                       border: Border(

@@ -73,7 +73,8 @@ class _AccountScreenState extends State<AccountScreen> {
 
           content:
           SizedBox(
-            height: which == "guardian" ? 120:80,
+            height: which == "guardian" ? 150:80,
+            width: 350,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -193,7 +194,7 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Account"),
+        title: const Text("Account", style: TextStyle(fontSize: 30),),
         centerTitle: true,
         leading: InkWell(
           splashColor: Colors.transparent,
@@ -202,15 +203,18 @@ class _AccountScreenState extends State<AccountScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Icon(Icons.arrow_back_ios_new_rounded, color: Colors.blueAccent,),
-              Text("Settings", style: TextStyle(fontSize: 18, color: Colors.blueAccent),),
+              SizedBox(width: 20,),
+              Icon(Icons.arrow_back_ios_new_rounded, color: Colors.blueAccent, size: 30,),
+              SizedBox(width: 20,),
+              Text("Settings", style: TextStyle(fontSize: 30, color: Colors.blueAccent),),
             ],
           ),
           onTap: (){
             Navigator.of(context).pop();
           },
         ),
-        leadingWidth: 120,
+        leadingWidth: 200,
+        toolbarHeight: 120,
       ),
 
       body: SingleChildScrollView(
@@ -220,8 +224,8 @@ class _AccountScreenState extends State<AccountScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 10,),
-              const Icon(Icons.account_circle_rounded, size: 100, color: Colors.grey,),
-              Text(accountName, style: const TextStyle(fontSize: 30,),),
+              const Icon(Icons.account_circle_rounded, size: 150, color: Colors.grey,),
+              Text(accountName, style: const TextStyle(fontSize: 35,),),
               const SizedBox(height: 30,),
               InkWell(
                 onTap: (){
