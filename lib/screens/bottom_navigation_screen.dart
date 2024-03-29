@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
+import 'package:alarm/service/alarm_storage.dart';
 
 import 'package:ble_uart/screens/alarm_set_screen.dart';
 import 'package:ble_uart/screens/catheter_count_screen.dart';
@@ -32,6 +33,7 @@ class BottomNavigationScreen extends StatefulWidget {
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   int _currentIndex = 0;
   late List<AlarmSettings> alarms = [];
+  static StreamSubscription<AlarmSettings>? subscription;
 
   @override
   void initState() {
@@ -40,41 +42,17 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     if (Alarm.android) {
       checkAndroidNotificationPermission();
     }
-
-    loadAlarms();
-
+    initializing();
     print("[alarm_set_screen] load alarm done");
   }
 
-  Future<void> sendEmail() async {
-    String? guardian;
-
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    userName = pref.getString("name") ?? "No name";
-    guardian = pref.getString("guardianEmail");
-
-    if(guardian == "") guardian = "medilightalert@gmail.com";
-
-    final url = Uri.parse("https://api.emailjs.com/api/v1.0/email/send");
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'origin': 'http://localhost',
-      },
-      body: json.encode({
-        'service_id': 'service_3gzs5mj',
-        'template_id': 'template_h9e6z72',
-        'user_id': 'DpL6M9GiRBZFBI1bh',
-        'accessToken': '1-6LZXIKob51cgNkHjbmt',
-        'template_params': {
-          'user_name': userName,
-          'send_to': guardian,
-        },
-      }),
-    );
-
-    print(response.body);
+  void initializing(){
+    AlarmStorage.init();
+    loadAlarms();
+    subscription ??= Alarm.ringStream.stream.listen((alarmSettings){
+      print("GG");
+      navigateToRingScreen(alarmSettings);
+    });
   }
 
   Future<void> checkAndroidNotificationPermission() async {
@@ -121,24 +99,24 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   Widget build(BuildContext context) {
     Background.startFlutterBackgroundService(() async{
       Background.connectToDevice();
-      Background.alarmSendEmail();
     });
     return Scaffold(
       body: SafeArea(
         child: _widgetOptions.elementAt(_currentIndex),
       ),
       bottomNavigationBar: SizedBox(
-        height: 120,
+        height: 110,
         child: SalomonBottomBar(
+          itemPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60,),
           key: bottomNavGKey,
           backgroundColor: Colors.white,
           currentIndex: _currentIndex,
           onTap: (i) => setState(() => _currentIndex = i),
           items: [
-            SalomonBottomBarItem(icon: const Icon(Icons.home, size: 40,), title: const Text("Home", style: TextStyle(fontSize: 15),), selectedColor: Colors.blueGrey),
-            SalomonBottomBarItem(icon: const Icon(Icons.check_box_outlined, size: 40,), title: const Text("Catheter", style: TextStyle(fontSize: 15),), selectedColor: Colors.pinkAccent),
-            SalomonBottomBarItem(icon: const Icon(Icons.notifications_rounded, size: 40,), title: const Text("Alarm", style: TextStyle(fontSize: 15),), selectedColor: Colors.orange),
-            SalomonBottomBarItem(icon: const Icon(Icons.settings, size: 40,), title: const Text("Settings", style: TextStyle(fontSize: 15),), selectedColor: Colors.deepPurpleAccent),
+            SalomonBottomBarItem(icon: const Icon(Icons.home, size: 40,), title: const Text("HOME", style: TextStyle(fontSize: 20),), selectedColor: Colors.blueGrey),
+            SalomonBottomBarItem(icon: const Icon(Icons.check_box_outlined, size: 40,), title: const Text("CATHETER", style: TextStyle(fontSize: 20),), selectedColor: Colors.pinkAccent),
+            SalomonBottomBarItem(icon: const Icon(Icons.notifications_rounded, size: 40,), title: const Text("ALARM", style: TextStyle(fontSize: 20),), selectedColor: Colors.orange),
+            SalomonBottomBarItem(icon: const Icon(Icons.settings, size: 40,), title: const Text("SETTINGS", style: TextStyle(fontSize: 20),), selectedColor: Colors.deepPurpleAccent),
           ],
         ),
       ),

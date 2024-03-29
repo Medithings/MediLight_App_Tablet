@@ -95,6 +95,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   late String timeStampForDBETC;
 
+  List<int> levelIndexForEx = [3, 4, 5];
+  int levelCurrentIndexForEx = 0;
+
   @override
   void initState() {
     super.initState();
@@ -128,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     batteryValue.value = 0;
     riveIdx = -1;
     temperature = 0;
+    levelCurrentIndexForEx = 0;
 
     mTimeStamp();
 
@@ -651,10 +655,10 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       fontSize: 40, fontWeight: FontWeight.bold, color: Colors.green,
     ),
     const TextStyle(
-      fontSize: 30, fontWeight: FontWeight.bold, color: Colors.orange,
+      fontSize: 40, fontWeight: FontWeight.bold, color: Colors.orange,
     ),
     const TextStyle(
-      fontSize: 30, fontWeight: FontWeight.bold, color: Colors.red,
+      fontSize: 40, fontWeight: FontWeight.bold, color: Colors.red,
     ),
   ];
 
@@ -807,8 +811,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         scrolledUnderElevation: 0.0,
         backgroundColor: Colors.white,
         elevation: 0.0,
-        toolbarHeight: 120,
-        title: Text(todayString, style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w600),),
+        toolbarHeight: 130,
+        title: Text(todayString, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),),
         centerTitle: true,
         automaticallyImplyLeading: false,
         leading: Row(
@@ -844,77 +848,87 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         SliverToBoxAdapter(  // 단일 위젯은 요걸로
                           child: Padding(
                             padding: const EdgeInsets.only(left: 30, right: 30,),
-                            child: Container(
-                              height: MediaQuery.of(context).size.height * 0.41,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.transparent),
-                                color: cardColors[levelIdx],
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
+                            child: InkWell(
+                              onTap: (){
+                                setState(() {
+                                  levelCurrentIndexForEx++;
+                                  levelCurrentIndexForEx %= 3;
+                                  level = levelIndexForEx[levelCurrentIndexForEx];
+                                  updatingLevelIdx();
+                                });
+                              },
+                              child: Container(
+                                height: MediaQuery.of(context).size.height * 0.41,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.transparent),
+                                  color: cardColors[levelIdx],
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                  ),
                                 ),
-                              ),
-                              child: Column(
-                                // crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 40,),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 250, right: 250),
-                                    child: Container(
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: _isConnected? Colors.black:Colors.redAccent,
-                                        borderRadius: const BorderRadius.all(Radius.circular(70)),
-                                      ),
+                                child: Column(
+                                  // crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 40,),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 250, right: 250),
+                                      child: Container(
+                                        height: 80,
+                                        decoration: BoxDecoration(
+                                          color: _isConnected? Colors.black:Colors.redAccent,
+                                          borderRadius: const BorderRadius.all(Radius.circular(70)),
+                                        ),
 
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          const Spacer(flex: 1,),
-                                          // BatteryIndicator(
-                                          //   trackHeight: 17,
-                                          //   value: 0.9,
-                                          //   iconOutline: Colors.white,
-                                          // ),
-                                          _isConnected? const Icon(Icons.bolt_rounded, color: Colors.greenAccent, size: 30,) : const Icon(Icons.cancel, color: Colors.black, size: 30,),
-                                          const SizedBox(width: 10,),
-                                          _isConnected? const Text("MediLight", style: TextStyle(fontSize: 20, color: Colors.white),) :const Text("No Connection", style: TextStyle(fontSize: 20, color: Colors.white),),
-                                          _isConnected? const Spacer(flex: 2,) : const SizedBox(),
-                                          _isConnected?
-                                            SizedBox(
-                                              width: 53,
-                                              height: 53,
-                                              child: SimpleCircularProgressBar(
-                                                valueNotifier: batteryValue,
-                                                progressStrokeWidth: 3,
-                                                backStrokeWidth: 3,
-                                                mergeMode: true,
-                                                animationDuration: 0,
-                                                onGetText: (double value){
-                                                  return Text("${value.toInt()}", style: const TextStyle(color: Colors.white, fontSize: 20,),);
-                                                },
-                                              ),
-                                            ):
-                                            const SizedBox(),
-                                          const Spacer(flex: 1,),
-                                        ],
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            const Spacer(flex: 1,),
+                                            // BatteryIndicator(
+                                            //   trackHeight: 17,
+                                            //   value: 0.9,
+                                            //   iconOutline: Colors.white,
+                                            // ),
+                                            _isConnected? const Icon(Icons.bolt_rounded, color: Colors.greenAccent, size: 30,) : const Icon(Icons.cancel, color: Colors.black, size: 30,),
+                                            const SizedBox(width: 10,),
+                                            _isConnected? const Text("MediLight", style: TextStyle(fontSize: 20, color: Colors.white),) :const Text("No Connection", style: TextStyle(fontSize: 20, color: Colors.white),),
+                                            _isConnected? const Spacer(flex: 2,) : const SizedBox(),
+                                            _isConnected?
+                                              SizedBox(
+                                                width: 53,
+                                                height: 53,
+                                                child: SimpleCircularProgressBar(
+                                                  valueNotifier: batteryValue,
+                                                  progressStrokeWidth: 3,
+                                                  backStrokeWidth: 3,
+                                                  mergeMode: true,
+                                                  animationDuration: 0,
+                                                  onGetText: (double value){
+                                                    return Text("${value.toInt()}", style: const TextStyle(color: Colors.white, fontSize: 20,),);
+                                                  },
+                                                ),
+                                              ):
+                                              const SizedBox(),
+                                            const Spacer(flex: 1,),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 80,),
-                                  // Center(child: Lottie.asset('assets/walking.json', frameRate: FrameRate.max, width: 250, height: 230,)),
-                                  SizedBox(
-                                    // color: Colors.purpleAccent,
-                                    height: 250,
-                                    width: MediaQuery.of(context).size.height * 0.2,
-                                    child: RiveAnimation.asset(
-                                      "assets/rive/lil_guy_updated.riv",
-                                      fit: BoxFit.fill,
-                                      onInit: _riveOneInit,
-                                      alignment: Alignment.center,
+                                    const SizedBox(height: 50,),
+                                    // Center(child: Lottie.asset('assets/walking.json', frameRate: FrameRate.max, width: 250, height: 230,)),
+                                    SizedBox(
+                                      // color: Colors.purpleAccent,
+                                      height: 300,
+                                      width: MediaQuery.of(context).size.width * 0.35,
+                                      child: RiveAnimation.asset(
+                                        "assets/rive/lil_guy_updated.riv",
+                                        fit: BoxFit.fill,
+                                        onInit: _riveOneInit,
+                                        alignment: Alignment.center,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -951,7 +965,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 20.0, right: 0.0, top: 5),
+                                    padding: const EdgeInsets.only(left: 40.0, right: 0.0, top: 5),
                                     child: LinearPercentIndicator(
                                       width: MediaQuery.of(context).size.width * 0.82,
                                       animation: false,
@@ -988,7 +1002,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                           collapsedHeight: MediaQuery.of(context).size.height * 0.1,
                           backgroundColor: Colors.white,
                           flexibleSpace: FlexibleSpaceBar(
-                            titlePadding: const EdgeInsets.only(left: 50.0, right: 0.0, bottom: 20.0),
+                            titlePadding: const EdgeInsets.only(left: 50.0, right: 0.0, bottom: 20.0, top: 20,),
                             title: RichText(
                               text: TextSpan(
                                 text: "Current Level: $level",
@@ -1018,9 +1032,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
                         SliverToBoxAdapter(  // 단일 위젯은 요걸로
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10,),
+                            padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10, top: 20,),
                             child: SizedBox(
-                              height: 70,
+                              height: 120,
                               child: FilledButton(
                                 style: FilledButton.styleFrom(
                                   backgroundColor: Colors.blueGrey,
@@ -1033,7 +1047,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                     measure();
                                   }
                                 },
-                                child: const Text("Measure", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                                child: const Text("Measure", style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),),
                               ),
                             ),
                           ),
@@ -1041,92 +1055,102 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
                         const SliverToBoxAdapter(
                           child: Padding(
-                            padding: EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 15,),
-                            child: Divider(),
+                            padding: EdgeInsets.only(left: 30, right: 30, top: 25, bottom: 25,),
+                            child: Divider(thickness: 3.0, color: Colors.grey,),
                           ),
                         ),
 
                         SliverToBoxAdapter(
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 15, top: 10,),
+                            padding: const EdgeInsets.only(left: 30, right: 30, top: 20,),
                             child: Container(
+                              height: 115,
                               decoration: BoxDecoration(
                                 color: Colors.black54,
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Text(
-                                  "Remaining catheter: $dayPer",
-                                  style: const TextStyle(color: Colors.white, fontSize: 20,),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Text(
+                                    "Remaining catheter: $dayPer",
+                                    style: const TextStyle(color: Colors.white, fontSize: 30,),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
 
-                        SliverToBoxAdapter(  // 단일 위젯은 요걸로
-                          child: SizedBox(
-                            height: 130.0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                FilledButton(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: const Color.fromRGBO(147, 192, 164, 1),
-                                  ),
-                                  onPressed: (){
-                                    setState(() {
-                                      level = 3;
-                                      updatingLevelIdx();
-                                    });
-                                  },
-                                  child: const Text("Lv 3", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                                ),
-
-                                FilledButton(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: const Color.fromRGBO(182, 196, 162, 1),
-                                  ),
-                                  onPressed: (){
-                                    setState(() {
-                                      level = 4;
-                                      updatingLevelIdx();
-                                    });
-                                  },
-                                  child: const Text("Lv 4", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                                ),
-
-                                FilledButton(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: const Color.fromRGBO(212, 205, 171, 1),
-                                  ),
-                                  onPressed: (){
-                                    setState(() {
-                                      level = 5;
-                                      updatingLevelIdx();
-                                    });
-                                  },
-                                  child: const Text("Lv 5", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        // SliverToBoxAdapter(  // 단일 위젯은 요걸로
+                        //   child: SizedBox(
+                        //     height: 130.0,
+                        //     child: Row(
+                        //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        //       children: [
+                        //         FilledButton(
+                        //           style: FilledButton.styleFrom(
+                        //             backgroundColor: const Color.fromRGBO(147, 192, 164, 1),
+                        //           ),
+                        //           onPressed: (){
+                        //             setState(() {
+                        //               level = 3;
+                        //               updatingLevelIdx();
+                        //             });
+                        //           },
+                        //           child: const Text("Lv 3", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                        //         ),
+                        //
+                        //         FilledButton(
+                        //           style: FilledButton.styleFrom(
+                        //             backgroundColor: const Color.fromRGBO(182, 196, 162, 1),
+                        //           ),
+                        //           onPressed: (){
+                        //             setState(() {
+                        //               level = 4;
+                        //               updatingLevelIdx();
+                        //             });
+                        //           },
+                        //           child: const Text("Lv 4", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                        //         ),
+                        //
+                        //         FilledButton(
+                        //           style: FilledButton.styleFrom(
+                        //             backgroundColor: const Color.fromRGBO(212, 205, 171, 1),
+                        //           ),
+                        //           onPressed: (){
+                        //             setState(() {
+                        //               level = 5;
+                        //               updatingLevelIdx();
+                        //             });
+                        //           },
+                        //           child: const Text("Lv 5", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
 
                         const SliverToBoxAdapter(
                           child: Padding(
-                            padding: EdgeInsets.only(left: 30, bottom: 10,),
-                            child: Text("Measured Time", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
+                            padding: EdgeInsets.only(left: 30, bottom: 20, top: 50,),
+                            child: Row(
+                              children: [
+                                Icon(Icons.alarm, size: 40,),
+                                SizedBox(width: 15,),
+                                Text("Measured Time", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
+                              ],
+                            ),
                           ),
                         ),
 
                         SliverToBoxAdapter(  // 단일 위젯은 요걸로
                           child: measuredTime.isEmpty?
                           Padding(
-                            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20,),
+                            padding: const EdgeInsets.only(left: 30, right: 30, bottom: 20,),
                             child: Container(
-                              height: 100.0,
+                              height: 130.0,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 color: Colors.white,
@@ -1136,14 +1160,14 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                 ),
                               ),
                               child: const Center(
-                                child: Text("You haven't measure yet", style: TextStyle(fontSize: 18, color: Colors.black54),),
+                                child: Text("You haven't measure yet", style: TextStyle(fontSize: 25, color: Colors.black54),),
                               ),
                             ),
                           ):
                           Padding(
                             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                             child: Container(
-                              height: 60.0 * measuredTime.length,
+                              height: 115.0 * measuredTime.length,
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
@@ -1161,22 +1185,25 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                     String parseString = parseTimeStamp(measuredTime[index]);
                                     String diffStr = diffTime(measuredTime[index]);
                                     return Padding(
-                                      padding: const EdgeInsets.only(left: 20.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                            width: MediaQuery.of(context).size.width * 0.77,
-                                            height: 23,
-                                            child: Text(parseString, style: const TextStyle(color: Colors.black, fontSize: 18,),),
-                                          ),
-                                          SizedBox(
-                                            width: MediaQuery.of(context).size.width * 0.77,
-                                            height: 23,
-                                            child: Text(diffStr, style: const TextStyle(color: Colors.blue),),
-                                          ),
-                                        ],
+                                      padding: const EdgeInsets.only(left: 40.0),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 10, bottom: 10,),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              width: MediaQuery.of(context).size.width * 0.77,
+                                              height: 35,
+                                              child: Text(parseString, style: const TextStyle(color: Colors.black, fontSize: 25,),),
+                                            ),
+                                            SizedBox(
+                                              width: MediaQuery.of(context).size.width * 0.77,
+                                              height: 28,
+                                              child: Text(diffStr, style: const TextStyle(color: Colors.blue, fontSize: 20),),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },
@@ -1186,13 +1213,18 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                           ),
                         ),
 
+                        // SliverToBoxAdapter(  // 단일 위젯은 요걸로
+                        //   child: Container(
+                        //     height: 500.0,
+                        //     color: Colors.blueGrey,
+                        //     child: const Center(
+                        //       child: Text("Some Start Widgets"),
+                        //     ),
+                        //   ),
+                        // ),
                         SliverToBoxAdapter(  // 단일 위젯은 요걸로
                           child: Container(
-                            height: 500.0,
-                            color: Colors.blueGrey,
-                            child: const Center(
-                              child: Text("Some Start Widgets"),
-                            ),
+                            height: 50.0,
                           ),
                         ),
                       ],

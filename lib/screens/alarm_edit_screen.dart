@@ -1,5 +1,6 @@
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AlarmEditScreen extends StatefulWidget {
@@ -123,130 +124,145 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
+          Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(fontSize: 25, color: Colors.blueAccent),
+                  ),
+                ),
+                TextButton(
+                  onPressed: saveAlarm,
+                  child: loading
+                      ? const CircularProgressIndicator()
+                      : const Text(
+                    "Save",
+                    style: TextStyle(fontSize: 25, color: Colors.blueAccent),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Text(
+          //   getDay(),
+          //   style: Theme.of(context)
+          //       .textTheme
+          //       .titleMedium!
+          //       .copyWith(color: Colors.blueAccent.withOpacity(0.8)),
+          // ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20.0, top: 20,),
+            child: RawMaterialButton(
+              onPressed: pickTime,
+              fillColor: Colors.grey[200],
+              child: Container(
+                margin: const EdgeInsets.all(20),
                 child: Text(
-                  "Cancel",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(color: Colors.blueAccent),
+                  TimeOfDay.fromDateTime(selectedDateTime).format(context),
+                  style: const TextStyle(fontSize: 50, color: Colors.blueAccent)
                 ),
-              ),
-              TextButton(
-                onPressed: saveAlarm,
-                child: loading
-                    ? const CircularProgressIndicator()
-                    : Text(
-                  "Save",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(color: Colors.blueAccent),
-                ),
-              ),
-            ],
-          ),
-          const Align(
-            alignment: Alignment.topLeft,
-            child: Text("Shortcuts", style: TextStyle(fontSize: 24,),),
-          ),
-          Text(
-            getDay(),
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(color: Colors.blueAccent.withOpacity(0.8)),
-          ),
-          RawMaterialButton(
-            onPressed: pickTime,
-            fillColor: Colors.grey[200],
-            child: Container(
-              margin: const EdgeInsets.all(20),
-              child: Text(
-                TimeOfDay.fromDateTime(selectedDateTime).format(context),
-                style: Theme.of(context)
-                    .textTheme
-                    .displayMedium!
-                    .copyWith(color: Colors.blueAccent),
               ),
             ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Loop alarm audio',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: TextStyle(fontSize: 30,),
               ),
-              Switch(
-                value: loopAudio,
-                onChanged: (value) => setState(() => loopAudio = value),
+              Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: Transform.scale(
+                  scale: 1.5,
+                  child: Switch(
+                    value: loopAudio,
+                    onChanged: (value) => setState(() => loopAudio = value),
+                  ),
+                ),
               ),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Vibrate',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: TextStyle(fontSize: 30,),
               ),
-              Switch(
-                value: vibrate,
-                onChanged: (value) => setState(() => vibrate = value),
+              Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: Transform.scale(
+                  scale: 1.5,
+                  child: Switch(
+                    value: vibrate,
+                    onChanged: (value) => setState(() => vibrate = value),
+                  ),
+                ),
               ),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Sound',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: TextStyle(fontSize: 30,),
               ),
-              DropdownButton(
-                value: assetAudio,
-                items: const [
-                  DropdownMenuItem<String>(
-                    value: 'assets/ringtone/marimba.mp3',
-                    child: Text('Marimba'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'assets/ringtone/nokia.mp3',
-                    child: Text('Nokia'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'assets/ringtone/mozart.mp3',
-                    child: Text('Mozart'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'assets/ringtone/star_wars.mp3',
-                    child: Text('Star Wars'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'assets/ringtone/one_piece.mp3',
-                    child: Text('One Piece'),
-                  ),
-                ],
-                onChanged: (value) => setState(() => assetAudio = value!),
+              SizedBox(
+                width: 150,
+                child: DropdownButton(
+                  isExpanded: true,
+                  value: assetAudio,
+                  items: const [
+                    DropdownMenuItem<String>(
+                      value: 'assets/ringtone/marimba.mp3',
+                      child: Text(' Marimba', style: TextStyle(fontSize: 20,),),
+                    ),
+                    DropdownMenuItem<String>(
+                      value: 'assets/ringtone/nokia.mp3',
+                      child: Text(' Nokia', style: TextStyle(fontSize: 20,),),
+                    ),
+                    DropdownMenuItem<String>(
+                      value: 'assets/ringtone/mozart.mp3',
+                      child: Text(' Mozart', style: TextStyle(fontSize: 20,),),
+                    ),
+                    DropdownMenuItem<String>(
+                      value: 'assets/ringtone/star_wars.mp3',
+                      child: Text(' Star Wars', style: TextStyle(fontSize: 20,),),
+                    ),
+                    DropdownMenuItem<String>(
+                      value: 'assets/ringtone/one_piece.mp3',
+                      child: Text(' One Piece', style: TextStyle(fontSize: 20,),),
+                    ),
+                  ],
+                  onChanged: (value) => setState(() => assetAudio = value!),
+                ),
               ),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Custom volume',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: TextStyle(fontSize: 30,),
               ),
-              Switch(
-                value: volume != null,
-                onChanged: (value) =>
-                    setState(() => volume = value ? 0.5 : null),
+              Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: Transform.scale(
+                  scale: 1.5,
+                  child: Switch(
+                    value: volume != null,
+                    onChanged: (value) =>
+                        setState(() => volume = value ? 0.5 : null),
+                  ),
+                ),
               ),
             ],
           ),
@@ -262,6 +278,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
                       : volume! > 0.1
                       ? Icons.volume_down_rounded
                       : Icons.volume_mute_rounded,
+                  size: 40,
                 ),
                 Expanded(
                   child: Slider(
@@ -278,12 +295,9 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
           if (!creating)
             TextButton(
               onPressed: deleteAlarm,
-              child: Text(
+              child: const Text(
                 'Delete Alarm',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(color: Colors.red),
+                style: TextStyle(fontSize: 30, color: Colors.red),
               ),
             ),
           const SizedBox(),
