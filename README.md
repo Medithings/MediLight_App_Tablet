@@ -17,4 +17,3 @@ MediLight mobile application
 
 - Onboarding Page
   - onboarding page added
-
